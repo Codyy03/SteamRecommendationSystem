@@ -43,7 +43,7 @@ tfidf_matrix = tfidf.fit_transform(df['soup'])
 model = NearestNeighbors(n_neighbors=10, metric='cosine', algorithm='brute')
 model.fit(tfidf_matrix)
 
-def get_recommendations(game_name):
+def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15):
     # find game index
     try:
         idx = df[df['name'].str.contains(game_name, case=False)].index[0]
@@ -54,10 +54,12 @@ def get_recommendations(game_name):
     query_vector = tfidf_matrix[idx]
 
     # find 6 closest neighbors
-    distances, indices = model.kneighbors(query_vector, n_neighbors=150)
+    distances, indices = model.kneighbors(query_vector, n_neighbors=200)
 
     # temporary results array
     results = []
+    main_genre = df.iloc[idx]['genre_name'].split(',')[0] if df.iloc[idx]['genre_name'] else ""
+
     for i in range(1, len(distances.flatten())):
         res_idx = indices.flatten()[i]
         game_data = df.iloc[res_idx].copy()
@@ -65,19 +67,27 @@ def get_recommendations(game_name):
         # calculate final score
         similarity = 1 - distances.flatten()[i]
 
-        main_genre = df.iloc[idx]['genre_name'].split(',')[0] if df.iloc[idx]['genre_name'] else ""
-        match_bonus = 0.4 if main_genre in str(game_data['genre_name']) else 0
+        # get first word from game name
+        base_name = df.iloc[idx]['name'].lower()
+        rec_name = game_data['name'].lower()
 
-        meta_bonus = (game_data['metacritic_score'] / 100) * 0.3
-        pop_bonus = np.log10(game_data['recommendations_total'] + 1) / 6
+        series_penalty = 0
+        first_word = base_name.split()[0]
+        if len(first_word) > 3 and first_word in rec_name:
+            series_penalty = 0.15 # small penalty for the same name
 
-        game_data['final_score'] = similarity + match_bonus + meta_bonus + pop_bonus
+        # bonuses
+        match_bonus = genre_weight if main_genre in str(game_data['genre_name']) else 0
+        meta_bonus = (game_data['metacritic_score'] / 100) * meta_weight
+        pop_bonus = np.log10(game_data['recommendations_total'] + 1) * pop_weight
+
+        game_data['final_score'] = similarity + match_bonus + meta_bonus + pop_bonus - series_penalty
         results.append(game_data)
 
     results_df = pd.DataFrame(results).sort_values(by='final_score', ascending=False)
 
-    # show results
     print(f"Top Recommended for {game_name}:")
+
     for _, row in results_df.head(15).iterrows():
         print(f"- {row['name']} (Score: {row['final_score']:.2f})")
 
