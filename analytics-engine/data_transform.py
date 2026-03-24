@@ -1,11 +1,11 @@
 import pandas as pd
 
-# 1. Wczytujemy słowniki nazw
+# load names dictionary
 genres_dict = pd.read_csv('data/raw/genres.csv').set_index('id')['name'].to_dict()
 devs_dict = pd.read_csv('data/raw/developers.csv').set_index('id')['name'].to_dict()
 pubs_dict = pd.read_csv('data/raw/publishers.csv').set_index('id')['name'].to_dict()
 
-# 2. Wczytujemy tabele łączące i mapujemy nazwy
+# load helper tables
 print("Przetwarzanie tabel relacyjnych...")
 
 app_genres = pd.read_csv('data/raw/application_genres.csv')
@@ -20,28 +20,28 @@ app_pubs = pd.read_csv('data/raw/application_publishers.csv')
 app_pubs['publisher_name'] = app_pubs['publisher_id'].map(pubs_dict)
 pubs_grouped = app_pubs.groupby('appid')['publisher_name'].apply(lambda x: ', '.join(x.dropna())).reset_index()
 
-# 3. Wczytujemy główną tabelę
+# load main tables
 apps_cols = [
     'appid', 'name', 'short_description', 'type',
     'metacritic_score', 'recommendations_total', 'is_free'
 ]
 apps = pd.read_csv('data/raw/applications.csv', usecols=apps_cols)
 
-# 4. Filtrowanie - zostawiamy tylko gry
+# filters, only games
 apps = apps[apps['type'] == 'game'].copy()
 
-# 5. Łączenie wszystkiego w jeden DataFrame
+# connect every table in one big dataframe
 print("Scalanie danych...")
 final_df = apps.merge(genres_grouped, on='appid', how='left')
 final_df = final_df.merge(devs_grouped, on='appid', how='left')
 final_df = final_df.merge(pubs_grouped, on='appid', how='left')
 
-# 6. Czyszczenie końcowe
+# cleaning
 final_df['genre_name'] = final_df['genre_name'].fillna('')
 final_df['developer_name'] = final_df['developer_name'].fillna('Unknown')
 final_df['publisher_name'] = final_df['publisher_name'].fillna('Unknown')
 final_df['short_description'] = final_df['short_description'].fillna('')
 
-# 7. Zapisujemy plik do ML
+# save result
 final_df.to_csv('data/steam_games_final.csv', index=False)
 print(f"Sukces! Scalono dane dla {len(final_df)} gier.")
