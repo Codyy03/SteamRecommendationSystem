@@ -53,7 +53,7 @@ def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight
     # get game vector
     query_vector = tfidf_matrix[idx]
 
-    # find 6 closest neighbors
+    # find 200 closest neighbors
     distances, indices = model.kneighbors(query_vector, n_neighbors=200)
 
     # temporary results array
@@ -88,12 +88,62 @@ def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight
 
     print(f"Top Recommended for {game_name}:")
 
-    for _, row in results_df.head(15).iterrows():
+    for _, row in results_df.head(5).iterrows():
         print(f"- {row['name']} (Score: {row['final_score']:.2f})")
 
+    return results_df.head(15)
+
+def get_user_recommendations(game_names_list, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15):
+    valid_indices = []
+
+    # find indexes of all user games
+    for name in game_names_list:
+        try:
+            idx = df[df['name'].str.contains(name, case=False)].index[0]
+            valid_indices.append(idx)
+        except IndexError:
+            print(f"game {name} dont exist")
+    if not valid_indices:
+        return  "There is no valid game in library"
+
+    # get games vectors i calculate mean vector
+    user_vectors = tfidf_matrix[valid_indices]
+    user_profile_vector = np.asarray(user_vectors.mean(axis=0))
+
+    # find closest neighbors for mean profile
+    distances, indices = model.kneighbors(user_profile_vector, n_neighbors=250)
+
+    results = []
+
+    for i in range (len(distances.flatten())):
+        res_idx = indices.flatten()[i]
+
+        # skip games for user if game is in the list
+        if res_idx in valid_indices:
+            continue
+        game_data = df.iloc[res_idx].copy()
+        similarity = 1 - distances.flatten()[i]
+
+        fav_genre = df.iloc[valid_indices[0]]['genre_name'].split(',')[0]
+        match_bonus = genre_weight if fav_genre in str(game_data['genre_name']) else 0
+        meta_bonus = (game_data['metacritic_score'] / 100) * meta_weight
+        pop_bonus = np.log10(game_data['recommendations_total'] + 1) * pop_weight
+
+        game_data['final_score'] = similarity + match_bonus + meta_bonus + pop_bonus
+        results.append(game_data)
+
+    results_df = pd.DataFrame(results).sort_values(by='final_score', ascending = False)
+
+    for _, row in results_df.head(5).iterrows():
+        print(f"- {row['name']} (Score: {row['final_score']:.2f})")
+    return results_df.head(15)
 
 # test
 get_recommendations("The Witcher 3")
+
+my_library = ["The Witcher 3", "Skyrim", "Cyberpunk 2077"]
+print("recomandation for my library")
+get_user_recommendations(my_library)
 
 # save dataframe
 df.to_pickle('data/models/games_metadata.pkl')
@@ -105,6 +155,7 @@ with open('data/models/tfidf_matrix.pkl', 'wb') as f:
 # save knn model
 with open('data/models/knn_model.pkl', 'wb') as f:
     pickle.dump(model, f)
+
 # save the vectorizer
 with open('data/models/tfidf_vectorizer.pkl', 'wb') as f:
     pickle.dump(tfidf, f)
