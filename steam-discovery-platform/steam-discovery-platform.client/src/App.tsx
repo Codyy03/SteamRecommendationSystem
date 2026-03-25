@@ -1,12 +1,39 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from './assets/vite.svg'
 import heroImg from './assets/hero.png'
 import './App.css'
+import { getGames } from './services/applicationsService'
 
 function App() {
   const [count, setCount] = useState(0)
 
+    interface GameInfoDTO {
+        appid: string;
+        name: string;
+        type?: string;
+    }
+
+    const [games, setGame] = useState<GameInfoDTO[]>([]);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchGames = async () => {
+            try {
+                const data = await getGames();
+                setGame(data);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchGames();
+    }, []);
+
+    if (loading) return <p>Loading...</p>;
+    
   return (
     <>
       <section id="center">
@@ -113,7 +140,17 @@ function App() {
       </section>
 
       <div className="ticks"></div>
-      <section id="spacer"></section>
+          <section id="spacer"></section>
+
+          {games.map((item, index) =>(
+              <div className="games" key={index}>
+                  <small className="text-muted newsPage-date"> {item.appid}</small>
+                  <small className="text-muted newsPage-date"> {item.name}</small>
+                  <small className="text-muted newsPage-date"> {item?.type}</small>
+
+          </div>
+          ))}
+
     </>
   )
 }
