@@ -1,0 +1,6 @@
+@steam_discovery_platform.Server_HostAddress = http://localhost:5221
+
+GET {{steam_discovery_platform.Server_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
