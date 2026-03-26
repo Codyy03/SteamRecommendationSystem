@@ -17,12 +17,13 @@ namespace steam_discovery_platform.Server.Services
 
         public async Task<List<GameInfoDTO>> GetTopGamesAsync(int count)
         {
-            List<GameInfoDTO> gameIinfoDTOs = await context.Applications.Where(a => a.Type == "game" && a.RecommendationsTotal > 1000).Select(
+            List<GameInfoDTO> gameIinfoDTOs = await context.Applications.Where(a => a.Type == "game" && a.RecommendationsTotal > 10000).Select(
                a => new GameInfoDTO
                {
                    Appid = a.Appid,
                    Name = a.Name,
                    Type = a.Type,
+                   HeaderImage = a.HeaderImage,
                }).Take(count).ToListAsync();
 
             return gameIinfoDTOs;

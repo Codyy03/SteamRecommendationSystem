@@ -7,5 +7,7 @@
         public string Name { get; set; } = null!;
 
         public string? Type { get; set; }
+
+        public string? HeaderImage { get; set; }
     }
 }
