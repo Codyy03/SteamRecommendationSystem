@@ -1,0 +1,10 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using steam_discovery_platform.Server.DTOs;
+
+namespace steam_discovery_platform.Server.Interfaces
+{
+    public interface IApplicationService
+    {
+        Task<List<GameInfoDTO>> GetTopGamesAsync(int count);
+    }
+}

@@ -1,13 +1,9 @@
 import { useEffect, useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
+import 'bootstrap/dist/css/bootstrap.min.css';
 import './App.css'
 import { getGames } from './services/applicationsService'
 
 function App() {
-  const [count, setCount] = useState(0)
-
     interface GameInfoDTO {
         appid: string;
         name: string;
@@ -33,126 +29,67 @@ function App() {
     }, []);
 
     if (loading) return <p>Loading...</p>;
-    
-  return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
+
+    return (
+        <div className="container-fluid min-vh-100 bg-dark text-light py-5">
+            {/* Sekcja Hero z Wyszukiwark¹ */}
+            <section id="center" className="container mb-5">
+                <div className="row justify-content-center w-100">
+                    <div className="col-12 col-md-10 col-lg-9">
+                        <h1 className="display-4 text-center mb-2 fw-bold text-primary">Steam Discovery</h1>
+                        <p className="text-center text-muted mb-5">Find your next favorite game in our database</p>
+
+                        <div className="input-group input-group-lg shadow-lg">
+                            <input
+                                type="text"
+                                className="form-control bg-secondary text-white border-0 ps-4"
+                                placeholder="Search by game name (e.g. Witcher, Portal)..."
+                            //      value={searchTerm}
+                            //    onChange={(e) => setSearchTerm(e.target.value)}
+                            //  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                            />
+                            <button
+                                className="btn btn-primary px-5 fw-bold"
+                                type="button"
+                            // onClick={handleSearch}
+                            >
+                                <button className="btn btn-primary px-5 fw-bold rounded-pill shadow-sm">
+                                    <i className="bi bi-search me-2 fw-bold"></i> Find
+                                </button>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Sekcja Wyników - Siatka Kart */}
+            <div className="container">
+                <div className="row g-4">
+                    {games.length > 0 ? (
+                        games.map((item) => (
+                            <div className="col-sm-6 col-md-4 col-lg-3" key={item.appid}>
+                                <div className="card h-100 bg-secondary text-white border-0 shadow-sm hover-effect">
+                                    {/* Jeœli masz w bazie linki do obrazków, wstaw je w src poni¿ej */}
+                                    <div className="card-body d-flex flex-column">
+                                        <div className="d-flex justify-content-between align-items-start mb-2">
+                                            <span className="badge bg-primary">{item.type}</span>
+                                            <small className="text-info">#{item.appid}</small>
+                                        </div>
+                                        <h5 className="card-title fw-bold mb-3">{item.name}</h5>
+
+                                        <button className="btn btn-outline-light btn-sm mt-auto">
+                                            View Details
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        !loading && <div className="text-center text-muted w-100 mt-5">No games found. Try searching for something else!</div>
+                    )}
+                </div>
+            </div>
         </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.tsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-          <section id="spacer"></section>
-
-          {games.map((item, index) =>(
-              <div className="games" key={index}>
-                  <small className="text-muted newsPage-date"> {item.appid}</small>
-                  <small className="text-muted newsPage-date"> {item.name}</small>
-                  <small className="text-muted newsPage-date"> {item?.type}</small>
-
-          </div>
-          ))}
-
-    </>
-  )
+    );
 }
-
 export default App

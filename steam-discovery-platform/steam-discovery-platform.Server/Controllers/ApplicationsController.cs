@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using steam_discovery_platform.Server.DTOs;
+using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
 
 namespace steam_discovery_platform.Server.Controllers
@@ -8,37 +10,19 @@ namespace steam_discovery_platform.Server.Controllers
     [Route("api/[controller]")]
     public class ApplicationsController : ControllerBase
     {
-        readonly SteamDbContext context;
+        readonly IApplicationService appService;
 
-        public ApplicationsController(SteamDbContext context)
+        public ApplicationsController(IApplicationService appService)
         {
-            this.context = context;
+            this.appService = appService;
         }
 
-        [HttpGet(Name ="getGames")]
+        [HttpGet("getGames")]
         public async Task<ActionResult<List<GameInfoDTO>>> GetGamesInfo()
         {
-            List<GameInfoDTO> gameIinfoDTOs = await context.Applications.Select(
-                a => new GameInfoDTO
-                {
-                    Appid = a.Appid,
-                    Name = a.Name,
-                    Type = a.Type,
-                }).Take(10).ToListAsync();
+            var games = await appService.GetTopGamesAsync(10);
 
-            if (gameIinfoDTOs == null)
-                return NotFound();
-
-            return Ok(gameIinfoDTOs);
-        }
-
-        public class GameInfoDTO
-        {
-            public int Appid { get; set; }
-
-            public string Name { get; set; } = null!;
-
-            public string? Type { get; set; }
+            return games == null ? NotFound() : Ok(games);
         }
     }
 }

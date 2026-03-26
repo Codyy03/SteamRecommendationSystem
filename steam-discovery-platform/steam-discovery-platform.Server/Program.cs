@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
+using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
+using steam_discovery_platform.Server.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -20,6 +22,8 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod()
                           .AllowAnyHeader());
 });
+
+builder.Services.AddScoped<IApplicationService, ApplicationService>();
 
 var app = builder.Build();
 

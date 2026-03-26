@@ -1,5 +1,5 @@
 export async function getGames() {
-    const response = await fetch("https://localhost:7179/api/applications")
+    const response = await fetch("https://localhost:7179/api/applications/getGames")
 
     if (!response.ok) throw new Error("Error when downloading games");
 
