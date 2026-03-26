@@ -32,7 +32,7 @@ function App() {
 
     return (
         <div className="container-fluid min-vh-100 bg-dark text-light py-5">
-            {/* Sekcja Hero z Wyszukiwarkπ */}
+            {/* Sekcja Hero z WyszukiwarkƒÖ */}
             <section id="center" className="container mb-5">
                 <div className="row justify-content-center w-100">
                     <div className="col-12 col-md-10 col-lg-9">
@@ -62,14 +62,14 @@ function App() {
                 </div>
             </section>
 
-            {/* Sekcja WynikÛw - Siatka Kart */}
+            {/* Sekcja Wynik√≥w - Siatka Kart */}
             <div className="container">
                 <div className="row g-4">
                     {games.length > 0 ? (
                         games.map((item) => (
                             <div className="col-sm-6 col-md-4 col-lg-3" key={item.appid}>
                                 <div className="card h-100 bg-secondary text-white border-0 shadow-sm hover-effect">
-                                    {/* Jeúli masz w bazie linki do obrazkÛw, wstaw je w src poniøej */}
+                                    {/* Je≈õli masz w bazie linki do obrazk√≥w, wstaw je w src poni≈ºej */}
                                     <div className="card-body d-flex flex-column">
                                         <div className="d-flex justify-content-between align-items-start mb-2">
                                             <span className="badge bg-primary">{item.type}</span>
