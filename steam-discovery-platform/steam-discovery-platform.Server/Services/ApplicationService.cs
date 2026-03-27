@@ -15,6 +15,21 @@ namespace steam_discovery_platform.Server.Services
             this.context = context;
         }
 
+        public async Task<List<GameInfoDTO>> GetGamesByGenreAsync(int count, string genre)
+        {
+            List<GameInfoDTO> gameIinfoDTOs = await context.Applications.Include(a => a.Genres)
+               .Where(a => a.Type == "game" && a.Genres.Any(g => g.Name == genre) && a.RecommendationsTotal > 10000).Select(
+               a => new GameInfoDTO
+               {
+                   Appid = a.Appid,
+                   Name = a.Name,
+                   Type = a.Type,
+                   HeaderImage = a.HeaderImage,
+               }).Take(count).ToListAsync();
+
+            return gameIinfoDTOs;
+        }
+
         public async Task<List<GameInfoDTO>> GetTopGamesAsync(int count)
         {
             List<GameInfoDTO> gameIinfoDTOs = await context.Applications.Where(a => a.Type == "game" && a.RecommendationsTotal > 10000).Select(

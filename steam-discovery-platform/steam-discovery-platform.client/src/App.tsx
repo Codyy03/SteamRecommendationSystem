@@ -2,7 +2,9 @@ import { useEffect, useState } from 'react'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import './App.css'
-import { getGames } from './services/applicationsService'
+import { getGames, getGamesByGenre } from './services/applicationsService'
+import SearchBar from './components/SearchBar';
+import Navbar from './components/Navbar';
 function App() {
     interface GameInfoDTO {
         appid: string;
@@ -31,31 +33,27 @@ function App() {
 
     if (loading) return <p>Loading...</p>;
 
-    return (
-        <div className="container-fluid min-vh-100 main-bg-gradient text-light py-5">
-            {/* Sekcja Hero z Wyszukiwarką */}
-            <section id="center" className="container mb-5">
-                <div className="row justify-content-center w-100">
-                    <div className="col-12 col-md-10 col-lg-9">
-                        <h1 className="display-4 text-center mb-2 fw-bold text-danger">Steam Discovery</h1>
-                        <p className="text-center text-light mb-5 ">Find your next favorite game in our database</p>
+    const handleGenreSelect = async (genre: string) => {
+        try {
+            const data = await getGamesByGenre(genre);
+            setGame(data);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
+    };
 
-                        <div className="input-group input-group-lg shadow-lg">
-                            <input
-                                type="text"
-                                className="form-control bg-secondary text-light border-0 ps-4"
-                                placeholder="Search by game name (e.g. Witcher, Portal)..."
-                            //      value={searchTerm}
-                            //    onChange={(e) => setSearchTerm(e.target.value)}
-                            //  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                            />
-                            <button className="btn btn-danger shadow-sm search-icon">
-                                <i className="bi bi-search fw-bold "></i>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </section>
+    return (
+        <div className="container-fluid min-vh-100 main-bg-gradient text-light py-4">
+
+            <Navbar />
+            <SearchBar searchTerm={''} setSearchTerm={function(value: string): void {
+                throw new Error('Function not implemented.');
+            } } onSearch={function(): void {
+                throw new Error('Function not implemented.');
+                }} onGenreSelect={handleGenreSelect}
+            />
 
             <div className="container">
                 <div className="row g-4">

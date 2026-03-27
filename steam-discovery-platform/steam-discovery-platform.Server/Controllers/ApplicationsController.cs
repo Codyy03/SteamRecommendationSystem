@@ -24,5 +24,13 @@ namespace steam_discovery_platform.Server.Controllers
 
             return games == null ? NotFound() : Ok(games);
         }
+
+        [HttpGet("getGamesByGenre")]
+        public async Task<ActionResult<List<GameInfoDTO>>> GetGamessByGenre(string genre)
+        {
+            var games = await appService.GetGamesByGenreAsync(10, genre);
+
+            return games == null ? NotFound() : Ok(games);
+        }
     }
 }
