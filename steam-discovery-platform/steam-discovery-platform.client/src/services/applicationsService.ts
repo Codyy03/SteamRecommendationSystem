@@ -7,7 +7,6 @@ export async function getGames() {
 }
 
 export async function getGamesByGenre(genre: string) {
-    // Przekazujemy parametr w URL (Query String)
     const response = await fetch(`https://localhost:7179/api/applications/getGamesByGenre?genre=${genre}`);
 
     if (!response.ok) throw new Error("Error when downloading games");

@@ -1,24 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 interface SearchBarProps {
-    searchTerm: string;
-    setSearchTerm: (value: string) => void;
-    onSearch: () => void;
-    onGenreSelect: (genre: string) => void;
+ //   searchTerm: string;
+ //   setSearchTerm: (value: string) => void;
+  //  onSearch: () => void;
 }
 
 //{ searchTerm, setSearchTerm, onSearch }
-const SearchBar: React.FC<SearchBarProps> = ({ onGenreSelect }) => {
-    const [activeGenre, setActiveGenre] = useState('');
-
-    const handleTagClick = (genre: string) => {
-        onGenreSelect(genre);
-        setActiveGenre(genre); 
-
-    };
-
+const SearchBar: React.FC<SearchBarProps> = () => {
     return (
-        < section id="center" className="container mb-5" >
+        < section id="center" className="container mb-4" >
             <div className="row justify-content-center w-100">
                 <div className="col-12 col-md-10 col-lg-9">
                     <h1 className="display-4 text-center mb-2 fw-bold text-danger">Steam Discovery</h1>
@@ -39,19 +30,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onGenreSelect }) => {
                         </button>
                     </div>
                 </div>
-                <div className="d-flex flex-wrap justify-content-center gap-2 mt-3">
-                    {['Action', 'RPG', 'Strategy', 'Indie', 'Simulation'].map(genre => (
-                        <button
-                            key={genre}
-                            className={`btn btn-sm rounded-pill px-3 ${activeGenre === genre ? 'btn-danger' : 'btn-outline-secondary text-light'}`}
-                            onClick={() => handleTagClick(genre)}
-                            style={{ backgroundColor: activeGenre === genre ? '' : 'rgba(255,255,255,0.05)' }}
-                        >
-                            {genre}
-                        </button>
-
-                    ))}
-                </div>
+               
             </div>
         </section >
     );
