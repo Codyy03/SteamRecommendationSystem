@@ -2,6 +2,7 @@
 using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
+using System.Globalization;
 
 namespace steam_discovery_platform.Server.Services
 {
@@ -15,10 +16,13 @@ namespace steam_discovery_platform.Server.Services
             this.context = context;
         }
 
-        public async Task<List<GameInfoDTO>> GetRecommendationsAsync(string query)
+        public async Task<List<GameInfoDTO>> GetRecommendationsAsync(string query, float genre = 0.4f, float met = 0.3f, float pop = 0.15f)
         {
             // ask python for recomendations
-            var response = await httpClient.GetAsync($"http://localhost:8000/recommend?query={query}");
+            var response = await httpClient.GetAsync(
+                string.Create(CultureInfo.InvariantCulture,
+                $"http://localhost:8000/recommend?query={query}&genre_weight={genre}&meta_weight={met}&pop_weight={pop}")
+            );
 
             if (!response.IsSuccessStatusCode) return new List<GameInfoDTO>();
 

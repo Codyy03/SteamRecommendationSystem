@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
 
 const SearchBar: React.FC = () => {
@@ -18,7 +18,11 @@ const SearchBar: React.FC = () => {
         < section id="center" className="container mb-4" >
             <div className="row justify-content-center w-100">
                 <div className="col-12 col-md-10 col-lg-9">
-                    <h1 className="display-4 text-center mb-2 fw-bold text-danger">Steam Discovery</h1>
+                    <Link to="/" className="text-decoration-none">
+                        <h1 className="display-4 text-center mb-2 fw-bold text-danger hover-opacity">
+                            Steam Discovery
+                        </h1>
+                    </Link>
                     <p className="text-center text-light mb-5 ">Find your next favorite game in our database</p>
                     
                     <div className="input-group input-group-lg shadow-lg search-container">
@@ -31,7 +35,7 @@ const SearchBar: React.FC = () => {
                              onChange={(e) => setSearchTerm(e.target.value)}
                              onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         />
-                        <button className="btn btn-danger shadow-sm search-icon"
+                        <button className="btn btn-danger shadow-sm search-ico"
                             onClick={handleSearch}>
                             <i className="bi bi-search fw-bold "></i>
                         </button>

@@ -16,9 +16,9 @@ namespace steam_discovery_platform.Server.Controllers
         }
 
         [HttpGet("pythonRecommendation")]
-        public async Task <ActionResult<List<GameInfoDTO>>> GetPythonRecommendationGames(string gameName)
+        public async Task <ActionResult<List<GameInfoDTO>>> GetPythonRecommendationGames(string gameName,float genre, float met,float pop)
         {
-            var games = await pythonRecommendationService.GetRecommendationsAsync(gameName);
+            var games = await pythonRecommendationService.GetRecommendationsAsync(gameName, genre, met, pop);
 
             return games == null ? NotFound() : Ok(games);
         }

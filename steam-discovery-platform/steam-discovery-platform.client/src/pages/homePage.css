@@ -62,3 +62,9 @@ html, body {
     background-color: #dc3545;
     box-shadow: 0 0 15px rgba(220, 53, 69, 0.4);
 }
+
+.hover-opacity:hover {
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+    cursor: pointer;
+}
