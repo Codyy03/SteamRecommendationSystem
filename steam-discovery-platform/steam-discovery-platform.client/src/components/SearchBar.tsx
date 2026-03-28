@@ -1,13 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 
-interface SearchBarProps {
- //   searchTerm: string;
- //   setSearchTerm: (value: string) => void;
-  //  onSearch: () => void;
-}
 
-//{ searchTerm, setSearchTerm, onSearch }
-const SearchBar: React.FC<SearchBarProps> = () => {
+const SearchBar: React.FC = () => {
+    const [searchTerm, setSearchTerm] = useState('');
+    const navigate = useNavigate();
+
+    const handleSearch = () => {
+        if (searchTerm.trim()) {
+            navigate(`/recommendations/${encodeURIComponent(searchTerm.trim())}`);
+        }
+    };
+
+    
+
     return (
         < section id="center" className="container mb-4" >
             <div className="row justify-content-center w-100">
@@ -21,11 +27,12 @@ const SearchBar: React.FC<SearchBarProps> = () => {
                             className="form-control bg-secondary text-light border-0 ps-4"
                             placeholder="Search by game name (e.g. Witcher, Portal)..."
                             style={{ boxShadow: 'none' }}
-                        //      value={searchTerm}
-                        //    onChange={(e) => setSearchTerm(e.target.value)}
-                        //  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                             value={searchTerm}
+                             onChange={(e) => setSearchTerm(e.target.value)}
+                             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                         />
-                        <button className="btn btn-danger shadow-sm search-icon">
+                        <button className="btn btn-danger shadow-sm search-icon"
+                            onClick={handleSearch}>
                             <i className="bi bi-search fw-bold "></i>
                         </button>
                     </div>
