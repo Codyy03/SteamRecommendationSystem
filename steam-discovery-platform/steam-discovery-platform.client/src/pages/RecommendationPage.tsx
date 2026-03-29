@@ -145,7 +145,7 @@ function RecommendationPage() {
                                 </div>
                             </div>
 
-                            {/* LINIA ROZDZIELAJ¥CA */}
+                            {/* LINIA ROZDZIELAJÄ„CA */}
                             <hr className="my-4 border-secondary opacity-25" />
 
                             <div className="row g-2 align-items-center d-flex justify-content-center py-1">
@@ -174,26 +174,26 @@ function RecommendationPage() {
                                         <option value="za">Name: Z-A</option>
                                     </select>
                                 </div>
-                                {/* Iloœæ gier */}
-                                    <div className="d-flex justify-content-between align-items-center mb-2">
-                                        <label className="form-label small opacity-75 mb-0">How many games</label>
-                                        <input
-                                            type="number"
-                                            className="form-control form-control-sm bg-dark text-light border-secondary text-center"
-                                            style={{ width: '50px', fontSize: '0.75rem', height: '24px' }}
-                                            min="10" max="50"
-                                            value={weights.howManyGames}
-                                            onChange={(e) => setWeights({ ...weights, howManyGames: Math.max(10, Math.min(50, parseInt(e.target.value) || 10)) })}
-                                        />
-                                    </div>
+                                {/* IloÅ›Ä‡ gier */}
+                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                    <label className="form-label small opacity-75 mb-0">How many games</label>
                                     <input
-                                        type="range" className="form-range custom-range"
-                                        min="10" max="50" step="1" value={weights.howManyGames}
-                                        onChange={(e) => setWeights({ ...weights, howManyGames: parseInt(e.target.value) })}
+                                        type="number"
+                                        className="form-control form-control-sm bg-dark text-light border-secondary text-center"
+                                        style={{ width: '50px', fontSize: '0.75rem', height: '24px' }}
+                                        min="10" max="50"
+                                        value={weights.howManyGames}
+                                        onChange={(e) => setWeights({ ...weights, howManyGames: Math.max(10, Math.min(50, parseInt(e.target.value) || 10)) })}
                                     />
+                                </div>
+                                <input
+                                    type="range" className="form-range custom-range"
+                                    min="10" max="50" step="1" value={weights.howManyGames}
+                                    onChange={(e) => setWeights({ ...weights, howManyGames: parseInt(e.target.value) })}
+                                />
 
                             </div>
-                           
+
 
                             <div className="mt-3 pt-2 d-flex justify-content-end border-top border-secondary border-opacity-10">
                                 <small className="opacity-50">
