@@ -5,6 +5,6 @@ namespace steam_discovery_platform.Server.Interfaces
 {
     public interface IPythonRecommendationService
     {
-        Task<List<GameInfoDTO>> GetRecommendationsAsync(string query, float genre, float met, float pop);
+        Task<List<GameInfoDTO>> GetRecommendationsAsync(string query, float genre, float met, float pop, int howManyGames);
     }
 }

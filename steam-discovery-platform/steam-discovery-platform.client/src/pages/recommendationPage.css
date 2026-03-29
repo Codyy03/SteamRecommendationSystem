@@ -65,3 +65,22 @@
     justify-content: center;
     padding: 100px 0;
 }
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+}
+
+input[type=number]:focus {
+  background-color: #212529 !important;
+  border-color: #dc3545 !important;
+  color: white !important;
+  box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25) !important;
+}

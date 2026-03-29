@@ -17,7 +17,7 @@ if os.path.exists(os.path.join(BASE_PATH, 'games_metadata.pkl')):
     with open(os.path.join(BASE_PATH, 'tfidf_vectorizer.pkl'), 'rb') as f:
         tfidf_vectorizer = pickle.load(f)
 
-def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15):
+def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15, how_many_games = 15):
     # try to find game in data base
     search_results = df[df['name'].str.contains(game_name, case=False, na=False)]
 
@@ -79,10 +79,10 @@ def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight
     return {
         "is_cold_start": is_cold_start,
         "base_game": base_name,
-        "recommendations": results_df.head(15).to_dict(orient='records')
+        "recommendations": results_df.head(how_many_games).to_dict(orient='records')
     }
 
-def get_user_recommendations(game_names_list, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15):
+def get_user_recommendations(game_names_list, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15, how_many_games = 15):
     valid_indices = []
 
     # find indexes of all user games
@@ -129,7 +129,7 @@ def get_user_recommendations(game_names_list, genre_weight=0.4, meta_weight=0.3,
     return {
         "is_cold_start": False,
         "base_game": "User Profile",
-        "recommendations": results_df.head(15).to_dict(orient='records')
+        "recommendations": results_df.head(how_many_games).to_dict(orient='records')
     }
 
 # test
