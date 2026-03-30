@@ -12,8 +12,6 @@ const SearchBar: React.FC = () => {
         }
     };
 
-    
-
     return (
         < section id="center" className="container mb-4" >
             <div className="row justify-content-center w-100">

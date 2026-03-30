@@ -145,7 +145,7 @@ function RecommendationPage() {
                                 </div>
                             </div>
 
-                            {/* LINIA ROZDZIELAJĄCA */}
+                            {/* limes (border) */}
                             <hr className="my-4 border-secondary opacity-25" />
 
                             <div className="row g-2 align-items-center d-flex justify-content-center py-1">
@@ -174,7 +174,7 @@ function RecommendationPage() {
                                         <option value="za">Name: Z-A</option>
                                     </select>
                                 </div>
-                                {/* Ilość gier */}
+                                {/* Games amount */}
                                 <div className="d-flex justify-content-between align-items-center mb-2">
                                     <label className="form-label small opacity-75 mb-0">How many games</label>
                                     <input

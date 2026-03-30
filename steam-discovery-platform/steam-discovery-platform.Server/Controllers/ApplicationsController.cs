@@ -32,5 +32,13 @@ namespace steam_discovery_platform.Server.Controllers
 
             return games == null ? NotFound() : Ok(games);
         }
+
+        [HttpGet("getGameDetails")]
+        public async Task<ActionResult<GameDetailsDTO>> GetGameDetails(int id)
+        {
+            var gameDetails = await appService.GetGameDetails(id);
+
+            return gameDetails == null ? NotFound() : Ok(gameDetails);
+        }
     }
 }

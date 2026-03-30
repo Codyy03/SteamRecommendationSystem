@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import "./homePage.css"
@@ -13,6 +14,7 @@ function HomePage() {
 
     const [games, setGame] = useState<GameInfoDTO[]>([]);
     const [activeGenre, setActiveGenre] = useState('');
+    const navigate = useNavigate();
 
     const [loading, setLoading] = useState(true);
     useEffect(() => {
@@ -47,6 +49,10 @@ function HomePage() {
         setActiveGenre(genre);
         handleGenreSelect(genre);
     };
+
+    const navigateToGameDetails = (id: number) => {
+        navigate(`gameInfo/${id}`)
+    }
 
     return (
         <div className="container-fluid min-vh-100 main-bg-gradient text-light">
@@ -91,8 +97,8 @@ function HomePage() {
                                             <small className="text-light">#{item.appid}</small>
                                         </div>
                                         <h5 className="card-title fw-bold mb-3">{item.name}</h5>
-
-                                        <button className="btn btn-steam-details btn-sm mt-auto">
+                                        <button className="btn btn-steam-details btn-sm mt-auto"
+                                            onClick={() => navigateToGameDetails(Number(item.appid))}>
                                             View Details
                                         </button>
                                     </div>

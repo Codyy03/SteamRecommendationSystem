@@ -7,5 +7,7 @@ namespace steam_discovery_platform.Server.Interfaces
     {
         Task<List<GameInfoDTO>> GetTopGamesAsync(int count);
         Task<List<GameInfoDTO>> GetGamesByGenreAsync(int count, string genre);
+
+        Task<GameDetailsDTO> GetGameDetails(int id);
     }
 }
