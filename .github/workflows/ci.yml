@@ -25,6 +25,8 @@ jobs:
       run: dotnet build ./steam-discovery-platform/steam-discovery-platform.Server --no-restore
 
     - name: Test
+      env:
+        ConnectionStrings__DefaultConnection: "Host=localhost;Database=fake;Username=postgres;Password=postgres"
       run: dotnet test ./steam-discovery-platform/steam-discovery-platform.Server.Tests --verbosity normal
 
     # Frontend (React)

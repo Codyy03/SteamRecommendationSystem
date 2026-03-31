@@ -16,15 +16,29 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<SteamDbContext>));
-                if (descriptor != null)
+                var descriptors = services
+                    .Where(d => d.ServiceType == typeof(DbContextOptions<SteamDbContext>))
+                    .ToList();
+
+                foreach (var descriptor in descriptors)
+                {
                     services.Remove(descriptor);
+                }
 
                 services.AddDbContext<SteamDbContext>(options =>
                 {
                     options.UseInMemoryDatabase(Guid.NewGuid().ToString());
                 });
+
+                services.AddDbContext<SteamDbContext>(options =>
+                {
+                    options.UseInMemoryDatabase("TestDatabase_" + Guid.NewGuid().ToString());
+                });
+
+                var sp = services.BuildServiceProvider();
+                using var scope = sp.CreateScope();
+                var db = scope.ServiceProvider.GetRequiredService<SteamDbContext>();
+                db.Database.EnsureCreated();
             });
         }
     }
