@@ -2,9 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestPlatform.TestHost;
 using steam_discovery_platform.Server.Models;
-namespace MediCare.Server.Tests.TestInfrastructure
+namespace steam_discovery_platform.Server.Tests.TestInfrastructure
 {
     /// <summary>
     /// A custom <see cref="WebApplicationFactory{TEntryPoint}"/> that configures
@@ -19,19 +18,15 @@ namespace MediCare.Server.Tests.TestInfrastructure
         {
             builder.ConfigureServices(services =>
             {
-                var descriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<SteamDbContext>));
-                if (descriptor != null)
-                    services.Remove(descriptor);
-
                 services.AddDbContext<SteamDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase("TestDb");
+                    options.UseInMemoryDatabase(Guid.NewGuid().ToString());
                 });
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<SteamDbContext>();
+
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
 
@@ -42,74 +37,76 @@ namespace MediCare.Server.Tests.TestInfrastructure
 
                 db.SaveChanges();
 
+                var action = new Genre { Id = 1, Name = "Action" };
+                var rpg = new Genre { Id = 2, Name = "RPG" };
+                var freeToPlay = new Genre { Id = 3, Name = "Free to Play" };
 
-                db.Applications.AddRange(
-                 new Application
-                 {
-                     Appid = 10,
-                     Name = "Cyberpunk 2077",
-                     Type = "game",
-                     IsFree = false,
-                     ReleaseDate = new DateOnly(2020, 12, 10),
-                     ShortDescription = "Cyberpunk 2077 is an open-world, action-adventure RPG set in the megalopolis of Night City, where you play as a cyberpunk mercenary wrapped up in a do-or-die fight for survival.",
-                     HeaderImage = "https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg",
-                     MetacriticScore = 86,
-                     RecommendationsTotal = 650000,
-                     FinalPrice = 19900,
-                     Currency = "PLN",
-                     SupportsWindows = true,
-                     SupportsMac = false,
-                     SupportsLinux = true,
-                     CreatedAt = DateTime.UtcNow,
-                     PcRequirements = "{\"os_min\": \"Windows 10\", \"os_rec\": \"Windows 11\", \"memory_min\": \"12 GB RAM\", \"graphics_min\": \"GTX 1060\", \"processor_min\": \"Core i5-3570K\", \"processor_rec\": \"Core i7-12700K\"}",
+                var single = new Category { Id = 1, Name = "Single-player" };
+                var achievements = new Category { Id = 2, Name = "Steam Achievements" };
+                var controller = new Category { Id = 3, Name = "Full controller support" };
+                var multi = new Category { Id = 4, Name = "Multi-player" };
+                var crossPlatform = new Category { Id = 5, Name = "Cross-Platform Multiplayer" };
+                var workshop = new Category { Id = 6, Name = "Steam Workshop" };
+                var inApp = new Category { Id = 7, Name = "In-App Purchases" };
 
-                     Developers = new List<Developer> { new Developer { Name = "CD PROJEKT RED" } },
-                     Publishers = new List<Publisher> { new Publisher { Name = "CD PROJEKT RED" } },
-                     Genres = new List<Genre> {
-                        new Genre { Name = "RPG" },
-                        new Genre { Name = "Action" }
-                     },
-                     Categories = new List<Category> {
-                        new Category { Name = "Single-player" },
-                        new Category { Name = "Steam Achievements" },
-                        new Category { Name = "Full controller support" }
-                     }
-                 },
-                 new Application
-                 {
-                     Appid = 20,
-                     Name = "Counter-Strike 2",
-                     Type = "game",
-                     IsFree = true,
-                     ReleaseDate = new DateOnly(2023, 09, 27),
-                     ShortDescription = "For over two decades, Counter-Strike has offered an elite competitive experience, one shaped by millions of players from across the globe.",
-                     HeaderImage = "https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg",
-                     MetacriticScore = 82,
-                     RecommendationsTotal = 7500000,
-                     FinalPrice = 0,
-                     Currency = "USD",
-                     SupportsWindows = true,
-                     SupportsMac = false,
-                     SupportsLinux = true,
-                     CreatedAt = DateTime.UtcNow,
-                     PcRequirements = "{\"os_min\": \"Windows 10\", \"memory_min\": \"8 GB RAM\", \"graphics_min\": \"GTX 660\", \"processor_min\": \"Core i5-2500K\"}",
+                var app1 = new Application
+                {
+                    Appid = 10,
+                    Name = "Cyberpunk 2077",
+                    Type = "game",
+                    IsFree = false,
+                    ReleaseDate = new DateOnly(2020, 12, 10),
+                    ShortDescription = "Cyberpunk...",
+                    HeaderImage = "https://cdn.akamai.steamstatic.com/steam/apps/1091500/header.jpg",
+                    MetacriticScore = 86,
+                    RecommendationsTotal = 650000,
+                    FinalPrice = 19900,
+                    Currency = "PLN",
+                    SupportsWindows = true,
+                    SupportsMac = false,
+                    SupportsLinux = true,
+                    CreatedAt = DateTime.UtcNow,
 
-                     Developers = new List<Developer> { new Developer { Name = "Valve" } },
-                     Publishers = new List<Publisher> { new Publisher { Name = "Valve" } },
-                     Genres = new List<Genre> {
-                         new Genre { Name = "Action" },
-                         new Genre { Name = "Free to Play" }
-                     },
+                    Developers = new List<Developer> { new Developer { Id = 1, Name = "CD PROJEKT RED" } },
+                    Publishers = new List<Publisher> { new Publisher { Id = 1, Name = "CD PROJEKT RED" } }
+                };
 
-                     Categories = new List<Category> {
-                        new Category { Name = "Multi-player" },
-                        new Category { Name = "Cross-Platform Multiplayer" },
-                        new Category { Name = "Steam Workshop" },
-                        new Category { Name = "In-App Purchases" }
-                     }
-                 }
-             );
+                app1.Genres.Add(rpg);
+                app1.Genres.Add(action);
+                app1.Categories.Add(single);
+                app1.Categories.Add(achievements);
+                app1.Categories.Add(controller);
 
+                var app2 = new Application
+                {
+                    Appid = 20,
+                    Name = "Counter-Strike 2",
+                    Type = "game",
+                    IsFree = true,
+                    ReleaseDate = new DateOnly(2023, 09, 27),
+                    ShortDescription = "CS2...",
+                    HeaderImage = "https://cdn.akamai.steamstatic.com/steam/apps/730/header.jpg",
+                    MetacriticScore = 82,
+                    RecommendationsTotal = 7500000,
+                    FinalPrice = 0,
+                    Currency = "USD",
+                    SupportsWindows = true,
+                    SupportsMac = false,
+                    SupportsLinux = true,
+                    CreatedAt = DateTime.UtcNow,
+
+                    Developers = new List<Developer> { new Developer { Id = 2, Name = "Valve" } },
+                    Publishers = new List<Publisher> { new Publisher { Id = 2, Name = "Valve" } }
+                };
+
+                app2.Genres.Add(action); 
+                app2.Genres.Add(freeToPlay);
+                app2.Categories.Add(multi);
+                app2.Categories.Add(crossPlatform);
+                app2.Categories.Add(workshop);
+                app2.Categories.Add(inApp);
+
+                db.Applications.AddRange(app1, app2);
                 db.SaveChanges();
             });
         }

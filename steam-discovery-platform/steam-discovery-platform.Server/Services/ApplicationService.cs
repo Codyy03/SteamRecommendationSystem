@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
+
 namespace steam_discovery_platform.Server.Services
 {
     public class ApplicationService : IApplicationService
