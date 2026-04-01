@@ -1,5 +1,5 @@
 import os
-
+import re
 import pandas as pd
 import numpy as np
 import pickle
@@ -17,19 +17,39 @@ if os.path.exists(os.path.join(BASE_PATH, 'games_metadata.pkl')):
     with open(os.path.join(BASE_PATH, 'tfidf_vectorizer.pkl'), 'rb') as f:
         tfidf_vectorizer = pickle.load(f)
 
-def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15, how_many_games = 15):
-    # try to find game in data base
-    search_results = df[df['name'].str.contains(game_name, case=False, na=False)]
+
+def normalize_name(name):
+    """Removes special characters, spaces, and converts to lowercase."""
+    if not isinstance(name, str): return ""
+    name = re.sub(r'[^a-zA-Z0-9]', '', name.lower())
+    name = name.replace('ii', '2').replace('iii', '3').replace('iv', '4')
+    return name
+
+
+def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight=0.15, how_many_games=15, series_penalty_value = 0.4):
+    # Prepare a standardized version of the query
+    query_norm = normalize_name(game_name)
+
+    # Search the DataFrame using normalized names
+    if 'normalized_name' not in df.columns:
+        df['normalized_name'] = df['name'].apply(normalize_name)
+
+    # looking for an exact normalized match
+    search_results = df[df['normalized_name'] == query_norm]
+
+    # If there is no exact match, we look for whether the name contains the phrase
+    if search_results.empty:
+        search_results = df[df['normalized_name'].str.contains(query_norm, na=False)]
 
     if not search_results.empty:
-        # known game
-        idx = search_results.index[0]
+        best_match = search_results.sort_values(by='recommendations_total', ascending=False).iloc[0]
+
+        idx = best_match.name
         query_vector = tfidf_matrix[idx]
-        base_name = df.iloc[idx]['name']
-        main_genre = df.iloc[idx]['genre_name'].split(',')[0] if df.iloc[idx]['genre_name'] else ""
+        base_name = best_match['name']
+        main_genre = best_match['genre_name'].split(',')[0] if best_match['genre_name'] else ""
         is_cold_start = False
     else:
-        # cold start
         query_vector = tfidf_vectorizer.transform([game_name.lower()])
         base_name = game_name
         main_genre = ""
@@ -59,7 +79,7 @@ def get_recommendations(game_name, genre_weight=0.4, meta_weight=0.3, pop_weight
 
         series_penalty = 0
         if len(first_word) > 3 and first_word in game_data['name'].lower():
-            series_penalty = 0.4
+            series_penalty = series_penalty_value
 
         # Bonuses
         match_bonus = genre_weight if main_genre and main_genre in str(game_data['genre_name']) else 0
