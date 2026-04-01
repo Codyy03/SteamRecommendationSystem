@@ -1,19 +1,24 @@
-﻿using System;
-using System.Linq; // Wymagane dla metod rozszerzeń LINQ
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using steam_discovery_platform.Server.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
 namespace steam_discovery_platform.Server.Tests.TestInfrastructure
 {
+    /// <summary>
+    /// A custom <see cref="WebApplicationFactory{TEntryPoint}"/> that configures
+    /// an in-memory database named "TestDb" and pre-populates it with sample
+    /// data for integration testing.
+    /// The database is cleared before seeding to ensure a consistent state
+    /// across tests.
+    /// </summary>
     public class SeededDbFactory : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
         {
             builder.ConfigureServices(services =>
             {
-                // 1. Kompleksowe czyszczenie wszystkich opcji przypisanych przez providera Npgsql
+                // 1. Comprehensive cleanup of all options assigned by the Npgsql provider
                 var descriptorsToRemove = services.Where(d =>
                     d.ServiceType == typeof(DbContextOptions<SteamDbContext>) ||
                     d.ServiceType == typeof(DbContextOptions) ||
@@ -24,14 +29,14 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
                     services.Remove(descriptor);
                 }
 
-                // Dodatkowo zabezpieczamy się usunięciem domyślnego obiektu DbConnection, jeśli taki został
+                // Additionally, we protect ourselves by removing the default DbConnection object, if any
                 var dbConnectionDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(System.Data.Common.DbConnection));
                 if (dbConnectionDescriptor != null)
                 {
                     services.Remove(dbConnectionDescriptor);
                 }
 
-                // 2. Unikalna nazwa bazy dla każdej instancji Factory rozwiązuje błędy przy testach współbieżnych
+                // 2. Unique database name for each Factory instance solves concurrent test errors
                 string uniqueDbName = $"TestDb_{Guid.NewGuid()}";
 
                 services.AddDbContext<SteamDbContext>(options =>
@@ -43,7 +48,6 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<SteamDbContext>();
 
-                // 3. Reset bazy i seedowanie danych (ta część zostaje bez zmian)
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
 

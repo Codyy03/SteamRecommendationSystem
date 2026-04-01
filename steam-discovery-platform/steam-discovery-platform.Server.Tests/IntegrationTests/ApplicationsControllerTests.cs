@@ -5,8 +5,16 @@ using System.Text.Json;
 
 namespace steam_discovery_platform.Server.Tests.IntegrationTests
 {
+    /// <summary>
+    /// Contains integration tests for the ApplicationsController, 
+    /// verifying the correctness of API endpoints using a seeded in-memory database.
+    /// </summary>
     public class ApplicationsControllerTests
     {
+        /// <summary>
+        /// Verifies that the GetGames endpoint returns a successful 200 OK response 
+        /// with a valid list of game applications.
+        /// </summary>
         [Fact]
         public async Task GetApplications_ReturnOk()
         {
@@ -34,6 +42,10 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             });
         }
 
+        /// <summary>
+        /// Verifies that filtering applications by a valid genre returns a 200 OK response 
+        /// and a list of games matching the specified criteria.
+        /// </summary>
         [Fact]
         public async Task GetApplicationsByGenre_ReturnOk()
         {
@@ -61,7 +73,9 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             });
         }
 
-
+        /// Verifies that providing a non-existent or invalid genre returns a 200 OK response 
+        /// with an empty list, ensuring the API handles zero results gracefully.
+        /// </summary>
         [Fact]
         public async Task GetApplicationsByGenre_ReturnNull()
         {
@@ -82,6 +96,10 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             Assert.Empty(games);
         }
 
+        /// <summary>
+        /// Verifies that the getGameDetails endpoint returns detailed information 
+        /// for a specific game ID, including prices and descriptions.
+        /// </summary>
         [Fact]
         public async Task GetApplicationsDetails_ReturnOk()
         {

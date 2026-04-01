@@ -6,6 +6,9 @@ using steam_discovery_platform.Server.Models;
 
 namespace steam_discovery_platform.Server.Services
 {
+    /// <summary>
+    /// Service responsible for managing and retrieving steam application data.
+    /// </summary>
     public class ApplicationService : IApplicationService
     {
         readonly SteamDbContext context;
@@ -15,6 +18,11 @@ namespace steam_discovery_platform.Server.Services
             this.context = context;
         }
 
+        /// <summary>
+        /// Retrieves detailed information about a specific game, including developers, publishers, genres, and categories.
+        /// </summary>
+        /// <param name="id">The unique Steam Application ID (Appid).</param>
+        /// <returns>A DTO containing comprehensive game details, or null if not found.</returns>
         public async Task<GameDetailsDTO> GetGameDetails(int id)
         {
             GameDetailsDTO? gameDetailsDTO = await context.Applications
@@ -51,6 +59,12 @@ namespace steam_discovery_platform.Server.Services
             return gameDetailsDTO!;
         }
 
+        /// <summary>
+        /// Retrieves a random collection of games filtered by a specific genre and minimum popularity threshold.
+        /// </summary>
+        /// <param name="count">The maximum number of games to return.</param>
+        /// <param name="genre">The name of the genre to filter by (case-insensitive).</param>
+        /// <returns>A list of games matching the specified genre.</returns>
         public async Task<List<GameInfoDTO>> GetGamesByGenreAsync(int count, string genre)
         {
             List<GameInfoDTO> gameInfoDTOs = await context.Applications.Include(a => a.Genres)
@@ -68,6 +82,11 @@ namespace steam_discovery_platform.Server.Services
             return gameInfoDTOs;
         }
 
+        /// <summary>
+        /// Retrieves a random selection of top-rated/popular games.
+        /// </summary>
+        /// <param name="count">The maximum number of games to return.</param>
+        /// <returns>A list of high-recommendation games.</returns>
         public async Task<List<GameInfoDTO>> GetTopGamesAsync(int count)
         {
             List<GameInfoDTO> gameIinfoDTOs = await context.Applications.Where(a => a.Type == "game" && a.RecommendationsTotal > 10000).Select(

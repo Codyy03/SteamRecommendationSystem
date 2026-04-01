@@ -6,6 +6,9 @@ using steam_discovery_platform.Server.Models;
 
 namespace steam_discovery_platform.Server.Controllers
 {
+    /// <summary>
+    /// API Controller for handling steam application requests.
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class ApplicationsController : ControllerBase
@@ -17,6 +20,10 @@ namespace steam_discovery_platform.Server.Controllers
             this.appService = appService;
         }
 
+        /// <summary>
+        /// Gets a list of top popular games.
+        /// </summary>
+        /// <returns>An ActionResult containing a list of top games.</returns>
         [HttpGet("getGames")]
         public async Task<ActionResult<List<GameInfoDTO>>> GetGamesInfo()
         {
@@ -25,6 +32,11 @@ namespace steam_discovery_platform.Server.Controllers
             return games == null ? NotFound() : Ok(games);
         }
 
+        /// <summary>
+        /// Gets a list of games filtered by a specific genre.
+        /// </summary>
+        /// <param name="genre">The genre name to search for.</param>
+        /// <returns>An ActionResult containing a list of games matching the genre.</returns>
         [HttpGet("getGamesByGenre")]
         public async Task<ActionResult<List<GameInfoDTO>>> GetGamessByGenre(string genre)
         {
@@ -33,6 +45,11 @@ namespace steam_discovery_platform.Server.Controllers
             return games == null ? NotFound() : Ok(games);
         }
 
+        /// <summary>
+        /// Gets full details for a specific game by its ID.
+        /// </summary>
+        /// <param name="id">The unique Steam ID of the application.</param>
+        /// <returns>An ActionResult containing the game details.</returns>
         [HttpGet("getGameDetails")]
         public async Task<ActionResult<GameDetailsDTO>> GetGameDetails(int id)
         {
