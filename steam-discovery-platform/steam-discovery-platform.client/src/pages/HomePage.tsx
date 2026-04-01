@@ -4,6 +4,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import "./homePage.css"
 import { getGames, getGamesByGenre } from '../services/applicationsService'
+
+let isInitialLoad = true;
 function HomePage() {
     interface GameInfoDTO {
         appid: string;
@@ -19,9 +21,26 @@ function HomePage() {
     const [loading, setLoading] = useState(true);
     useEffect(() => {
         const fetchGames = async () => {
+            if (isInitialLoad) {
+                sessionStorage.removeItem('cached_home_games');
+                sessionStorage.removeItem('active_genre');
+                isInitialLoad = false;
+            }
+
+            const cachedGames = sessionStorage.getItem('cached_home_games');
+            const cachedGenre = sessionStorage.getItem('active_genre');
+
+            if (cachedGames) {
+                setGame(JSON.parse(cachedGames));
+                if (cachedGenre) setActiveGenre(cachedGenre);
+                setLoading(false);
+                return;
+            }
+
             try {
                 const data = await getGames();
                 setGame(data);
+                sessionStorage.setItem('cached_home_games', JSON.stringify(data));
             } catch (err) {
                 console.error(err);
             } finally {
@@ -45,9 +64,20 @@ function HomePage() {
         }
     };
 
-    const handleTagClick = (genre: string) => {
+    const handleTagClick = async (genre: string) => {
         setActiveGenre(genre);
-        handleGenreSelect(genre);
+        setLoading(true);
+        try {
+            const data = await getGamesByGenre(genre);
+            setGame(data);
+
+            sessionStorage.setItem('cached_home_games', JSON.stringify(data));
+            sessionStorage.setItem('active_genre', genre);
+        } catch (err) {
+            console.error(err);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const navigateToGameDetails = (id: number) => {

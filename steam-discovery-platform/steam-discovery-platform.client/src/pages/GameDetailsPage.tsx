@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams} from 'react-router-dom';
 import { getGameDetails } from '../services/applicationsService';
 function GameDetailsPage() {
     interface GameDetailsDTO {
@@ -48,6 +48,9 @@ function GameDetailsPage() {
     const requirements = typeof gameDetails?.pcRequirements === 'string'
         ? JSON.parse(gameDetails.pcRequirements)
         : gameDetails?.pcRequirements;
+
+    const min = requirements?.minimum || {};
+    const rec = requirements?.recommended || {};
 
     if (loading) {
         return (
@@ -101,19 +104,19 @@ function GameDetailsPage() {
                                             <div className="d-flex flex-column gap-3">
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">OS</small>
-                                                    <span className="small">{requirements.os_min || 'N/A'}</span>
+                                                    <span className="small">{min.os || 'N/A'}</span>
                                                 </div>
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">Processor</small>
-                                                    <span className="small">{requirements.processor_min || 'N/A'}</span>
+                                                    <span className="small">{min.processor || 'N/A'}</span>
                                                 </div>
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">Memory</small>
-                                                    <span className="small">{requirements.memory_min || 'N/A'}</span>
+                                                    <span className="small">{min.memory || 'N/A'}</span>
                                                 </div>
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">Graphics</small>
-                                                    <span className="small">{requirements.graphics_min || 'N/A'}</span>
+                                                    <span className="small">{min.graphics || 'N/A'}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -124,19 +127,19 @@ function GameDetailsPage() {
                                             <div className="d-flex flex-column gap-3">
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">OS</small>
-                                                    <span className="small">{requirements.os_rec || requirements.os_min || 'N/A'}</span>
+                                                    <span className="small">{rec.os || min.os || 'N/A'}</span>
                                                 </div>
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">Processor</small>
-                                                    <span className="small">{requirements.processor_rec || 'N/A'}</span>
+                                                    <span className="small">{rec.processor || 'N/A'}</span>
                                                 </div>
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">Memory</small>
-                                                    <span className="small">{requirements.memory_rec || requirements.memory_min || 'N/A'}</span>
+                                                    <span className="small">{rec.memory || rec.memory || 'N/A'}</span>
                                                 </div>
                                                 <div className="requirement-item">
                                                     <small className="text-danger d-block mb-1">Graphics</small>
-                                                    <span className="small">{requirements.graphics_rec || 'N/A'}</span>
+                                                    <span className="small">{rec.graphics || 'N/A'}</span>
                                                 </div>
                                             </div>
                                         </div>

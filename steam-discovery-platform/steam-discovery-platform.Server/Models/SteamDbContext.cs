@@ -6,10 +6,6 @@ namespace steam_discovery_platform.Server.Models;
 
 public partial class SteamDbContext : DbContext
 {
-    public SteamDbContext()
-    {
-    }
-
     public SteamDbContext(DbContextOptions<SteamDbContext> options)
         : base(options)
     {
@@ -31,13 +27,6 @@ public partial class SteamDbContext : DbContext
 
     public virtual DbSet<UserLibrary> UserLibraries { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        if (!optionsBuilder.IsConfigured)
-        {
-            optionsBuilder.UseNpgsql("Host=localhost;Database=steamdb;Username=postgres;Password=admin");
-        }
-    }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

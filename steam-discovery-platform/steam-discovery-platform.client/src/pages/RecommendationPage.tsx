@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom'
 import { getPythonRecomentationGamesByName } from '../services/pythonRecommendationService';
 import './recommendationPage.css'
 
@@ -86,6 +87,11 @@ function RecommendationPage() {
 
         return result;
     }, [games, innerSearch, sortType]);
+
+    const navigate = useNavigate();
+    const navigateToGameDetails = (id: number) => {
+        navigate(`/gameInfo/${id}`);
+    }
 
     if (loading && games.length === 0) {
         return (
@@ -243,7 +249,8 @@ function RecommendationPage() {
                                                 <small className="text-light">#{item.appid}</small>
                                             </div>
                                             <h5 className="card-title fw-bold mb-3">{item.name}</h5>
-                                            <button className="btn btn-steam-details btn-sm mt-auto">
+                                            <button className="btn btn-steam-details btn-sm mt-auto"
+                                                onClick={() => navigateToGameDetails(Number(item.appid))}>
                                                 View Details
                                             </button>
                                         </div>

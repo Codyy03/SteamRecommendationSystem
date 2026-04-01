@@ -96,8 +96,9 @@ namespace steam_discovery_platform.Server.Services
                    Name = a.Name,
                    Type = a.Type,
                    HeaderImage = a.HeaderImage,
-               }).Take(count)
+               })
                .OrderBy(a => Guid.NewGuid())
+               .Take(count)
                .ToListAsync();
 
             return gameIinfoDTOs;
