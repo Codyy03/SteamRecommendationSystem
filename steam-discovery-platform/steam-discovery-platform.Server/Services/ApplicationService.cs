@@ -48,13 +48,13 @@ namespace steam_discovery_platform.Server.Services
                     Genres = string.Join(", ", a.Genres.Select(g => g.Name))
                 }).FirstOrDefaultAsync();
 
-            return gameDetailsDTO;
+            return gameDetailsDTO!;
         }
 
         public async Task<List<GameInfoDTO>> GetGamesByGenreAsync(int count, string genre)
         {
             List<GameInfoDTO> gameInfoDTOs = await context.Applications.Include(a => a.Genres)
-               .Where(a => a.Type == "game" && a.Genres.Any(g => g.Name == genre) && a.RecommendationsTotal > 10000).Select(
+               .Where(a => a.Type == "game" && a.Genres.Any(g => g.Name.ToLower() == genre.ToLower()) && a.RecommendationsTotal > 10000).Select(
                a => new GameInfoDTO
                {
                    Appid = a.Appid,

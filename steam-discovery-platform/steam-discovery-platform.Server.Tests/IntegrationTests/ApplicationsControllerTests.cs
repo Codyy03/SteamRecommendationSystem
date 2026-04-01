@@ -78,6 +78,7 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             var games = JsonSerializer.Deserialize<List<GameInfoDTO>>(content,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
+            Assert.NotNull(games);
             Assert.Empty(games);
         }
 
