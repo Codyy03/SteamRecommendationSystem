@@ -21,13 +21,13 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             var mockService = new Mock<IPythonRecommendationService>();
             var expectedGames = new List<GameInfoDTO> { new GameInfoDTO { Appid = 1, Name = "Test Game" } };
 
-            mockService.Setup(s => s.GetRecommendationsAsync(It.IsAny<string>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<int>()))
+            mockService.Setup(s => s.GetRecommendationsAsync(It.IsAny<string>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<int>(), It.IsAny<float>()))
                        .ReturnsAsync(expectedGames);
 
             var controller = new PythonRecommendationController(mockService.Object);
 
             // Act
-            var result = await controller.GetPythonRecommendationGames("Cyberpunk", 0.4f, 0.3f, 0.15f, 5);
+            var result = await controller.GetPythonRecommendationGames("Cyberpunk", 0.4f, 0.3f, 0.15f, 5, 0.4f);
 
             // Assert
             var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
@@ -64,7 +64,7 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             var service = new PythonRecommendationService(httpClient, null, context);
 
             // 3. Act
-            var result = await service.GetRecommendationsAsync("Witcher", 0.5f, 0.5f, 0.5f, 1);
+            var result = await service.GetRecommendationsAsync("Witcher", 0.5f, 0.5f, 0.5f, 1, 0);
 
             // 4. Assert
             result.Should().NotBeEmpty();
