@@ -1,9 +1,10 @@
-﻿using Microsoft.AspNetCore.Hosting;
+﻿using System;
+using System.Linq; // Wymagane dla metod rozszerzeń LINQ
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using steam_discovery_platform.Server.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.EntityFrameworkCore;
-
 namespace steam_discovery_platform.Server.Tests.TestInfrastructure
 {
     public class SeededDbFactory : WebApplicationFactory<Program>
@@ -12,22 +13,42 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
         {
             builder.ConfigureServices(services =>
             {
+                // 1. Kompleksowe czyszczenie wszystkich opcji przypisanych przez providera Npgsql
+                var descriptorsToRemove = services.Where(d =>
+                    d.ServiceType == typeof(DbContextOptions<SteamDbContext>) ||
+                    d.ServiceType == typeof(DbContextOptions) ||
+                    (d.ServiceType.FullName != null && d.ServiceType.FullName.Contains("IDbContextOptionsConfiguration"))).ToList();
+
+                foreach (var descriptor in descriptorsToRemove)
+                {
+                    services.Remove(descriptor);
+                }
+
+                // Dodatkowo zabezpieczamy się usunięciem domyślnego obiektu DbConnection, jeśli taki został
+                var dbConnectionDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(System.Data.Common.DbConnection));
+                if (dbConnectionDescriptor != null)
+                {
+                    services.Remove(dbConnectionDescriptor);
+                }
+
+                // 2. Unikalna nazwa bazy dla każdej instancji Factory rozwiązuje błędy przy testach współbieżnych
+                string uniqueDbName = $"TestDb_{Guid.NewGuid()}";
+
                 services.AddDbContext<SteamDbContext>(options =>
                 {
-                    options.UseInMemoryDatabase(Guid.NewGuid().ToString());
+                    options.UseInMemoryDatabase(uniqueDbName);
                 });
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<SteamDbContext>();
 
+                // 3. Reset bazy i seedowanie danych (ta część zostaje bez zmian)
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();
 
                 db.ChangeTracker.Clear();
-
                 db.Applications.RemoveRange(db.Applications);
-
                 db.SaveChanges();
 
                 var action = new Genre { Id = 1, Name = "Action" };
