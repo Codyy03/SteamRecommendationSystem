@@ -1,17 +1,11 @@
 ﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using steam_discovery_platform.Server.Models;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.EntityFrameworkCore;
+
 namespace steam_discovery_platform.Server.Tests.TestInfrastructure
 {
-    /// <summary>
-    /// A custom <see cref="WebApplicationFactory{TEntryPoint}"/> that configures
-    /// an in-memory database named "TestDb" and pre-populates it with sample
-    /// data for integration testing.
-    /// The database is cleared before seeding to ensure a consistent state
-    /// across tests.
-    /// </summary>
     public class SeededDbFactory : WebApplicationFactory<Program>
     {
         protected override void ConfigureWebHost(IWebHostBuilder builder)
@@ -33,7 +27,6 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
                 db.ChangeTracker.Clear();
 
                 db.Applications.RemoveRange(db.Applications);
-
 
                 db.SaveChanges();
 
@@ -99,7 +92,7 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
                     Publishers = new List<Publisher> { new Publisher { Id = 2, Name = "Valve" } }
                 };
 
-                app2.Genres.Add(action); 
+                app2.Genres.Add(action);
                 app2.Genres.Add(freeToPlay);
                 app2.Categories.Add(multi);
                 app2.Categories.Add(crossPlatform);

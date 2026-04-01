@@ -1,6 +1,5 @@
-using steam_discovery_platform.Server.DTOs;
+﻿using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Tests.TestInfrastructure;
-using System.Collections.Generic;
 using System.Net;
 using System.Text.Json;
 
