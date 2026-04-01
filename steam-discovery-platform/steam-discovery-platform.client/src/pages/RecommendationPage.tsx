@@ -169,7 +169,7 @@ function RecommendationPage() {
                                     <hr className="my-4 border-secondary opacity-25" />
 
                                     <div className="py-1">
-                                        {/* Górny rz¹d: Wyszukiwarka i Sortowanie */}
+                                        {/* Top Row: Search and Sort */}
                                         <div className="row g-3 align-items-center justify-content-center mb-4">
                                             <div className="col-lg-5 col-md-6">
                                                 <label className="form-label small opacity-75">Filter results by name</label>
@@ -198,9 +198,10 @@ function RecommendationPage() {
                                             </div>
                                         </div>
 
-                                        {/* Dolny rz¹d: Suwaki obok siebie */}
+
+                                        {/* Bottom row: Side-by-side sliders */}
                                         <div className="row g-4 justify-content-center">
-                                            {/* Kontener: Iloœæ gier */}
+                                            {/* Container: Number of games */}
                                             <div className="col-lg-5 col-md-6">
                                                 <div className="d-flex justify-content-between align-items-center mb-2">
                                                     <label className="form-label small opacity-75 mb-0">How many games</label>
@@ -215,7 +216,7 @@ function RecommendationPage() {
                                                 />
                                             </div>
 
-                                            {/* Kontener: Kara za seriê */}
+                                            {/* Container: Streak Penalty */}
                                             <div className="col-lg-5 col-md-6">
                                                 <div className="d-flex justify-content-between align-items-center mb-2">
                                                     <label className="form-label small opacity-75 mb-0">Penalty for same series</label>
