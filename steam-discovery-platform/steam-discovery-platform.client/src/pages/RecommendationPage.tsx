@@ -93,6 +93,8 @@ function RecommendationPage() {
         navigate(`/gameInfo/${id}`);
     }
 
+    const [isExpanded, setIsExpanded] = useState(false);
+
     if (loading && games.length === 0) {
         return (
             <div className="container-fluid min-vh-100 main-bg-gradient d-flex align-items-center justify-content-center">
@@ -111,11 +113,21 @@ function RecommendationPage() {
             <div className="container-fluid px-4">
                 <div className="container mb-5">
                     <div className="card custom-filter-card text-light border-0 shadow-lg" style={{ background: 'rgba(30, 34, 45, 0.8)', backdropFilter: 'blur(10px)' }}>
-                        <div className="card-body p-4">
-                            <h5 className="card-title mb-4">
-                                <i className="bi bi-sliders2-vertical me-2 text-danger"></i>
-                                Recommendation Engine Settings
-                            </h5>
+                        <div className="card-body p-0">
+                            <div
+                                className="p-4 d-flex justify-content-between align-items-center"
+                                style={{ cursor: 'pointer' }}
+                                onClick={() => setIsExpanded(!isExpanded)}
+                            >
+                                <h5 className="card-title mb-0">
+                                    <i className="bi bi-sliders2-vertical me-2 text-danger"></i>
+                                    Recommendation Engine Settings
+                                </h5>
+                                <i className={`bi bi-chevron-down transition-all ${isExpanded ? 'rotate-180' : ''}`}></i>
+                            </div>
+
+                            <div className={`filter-collapse ${isExpanded ? 'expanded' : ''}`}>
+                                <div className="px-4 pb-4">
 
                             {/* weights */}
                             <div className="row g-4">
@@ -199,14 +211,16 @@ function RecommendationPage() {
                                 />
 
                             </div>
-
-
+                           
                             <div className="mt-3 pt-2 d-flex justify-content-end border-top border-secondary border-opacity-10">
                                 <small className="opacity-50">
                                     Found: <span className="text-danger fw-bold">{filteredGames.length} games</span>
                                 </small>
                             </div>
+                                </div>
+                            </div>
                         </div>
+
                     </div>
                 </div>
 

@@ -53,17 +53,6 @@ function HomePage() {
 
     if (loading) return <p>Loading...</p>;
 
-    const handleGenreSelect = async (genre: string) => {
-        try {
-            const data = await getGamesByGenre(genre);
-            setGame(data);
-        } catch (err) {
-            console.error(err);
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleTagClick = async (genre: string) => {
         setActiveGenre(genre);
         setLoading(true);
