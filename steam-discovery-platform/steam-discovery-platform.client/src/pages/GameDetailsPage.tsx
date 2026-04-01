@@ -67,6 +67,7 @@ function GameDetailsPage() {
     return (
         <div className="container-fluid min-vh-100 main-bg-gradient py-5 px-4">
             {gameDetails && (
+
                 <div className="container py-4">
                     {/* title */}
                     <div className="d-flex align-items-center mb-4">

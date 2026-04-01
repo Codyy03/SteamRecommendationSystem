@@ -31,11 +31,8 @@
         public bool? SupportsLinux { get; set; }
 
         public string? PcRequirements { get; set; }
-
         public DateTime? CreatedAt { get; set; }
-
         public string? Developers { get; set; }
-
         public string? Publishers { get; set; }
         public string? Categories { get; set; }
         public string? Genres { get; set; }
