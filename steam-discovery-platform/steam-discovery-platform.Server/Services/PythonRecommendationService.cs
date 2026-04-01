@@ -28,12 +28,12 @@ namespace steam_discovery_platform.Server.Services
         /// <param name="pop">Influence of popularity on the result (default 0.15).</param>
         /// <param name="howManyGames">Total number of results requested (default 20).</param>
         /// <returns>A list of ordered <see cref="GameInfoDTO"/> matching the Python engine's rankings.</returns>
-        public async Task<List<GameInfoDTO>> GetRecommendationsAsync(string query, float genre = 0.4f, float met = 0.3f, float pop = 0.15f, int howManyGames = 20)
+        public async Task<List<GameInfoDTO>> GetRecommendationsAsync(string query, float genre = 0.4f, float met = 0.3f, float pop = 0.15f, int howManyGames = 20, float series_penalty = 0.4f)
         {
             // ask python for recomendations
             var response = await httpClient.GetAsync(
                 string.Create(CultureInfo.InvariantCulture,
-                $"http://localhost:8000/recommend?query={query}&genre_weight={genre}&meta_weight={met}&pop_weight={pop}&how_many_games={howManyGames}")
+                $"http://localhost:8000/recommend?query={query}&genre_weight={genre}&meta_weight={met}&pop_weight={pop}&how_many_games={howManyGames}&series_penalty_value={series_penalty}")
             );
 
             if (!response.IsSuccessStatusCode) return new List<GameInfoDTO>();

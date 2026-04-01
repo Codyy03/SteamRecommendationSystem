@@ -28,9 +28,9 @@ namespace steam_discovery_platform.Server.Controllers
         /// <param name="howManyGames">Number of recommendations to retrieve.</param>
         /// <returns>A list of recommended games with basic info.</returns>
         [HttpGet("pythonRecommendation")]
-        public async Task <ActionResult<List<GameInfoDTO>>> GetPythonRecommendationGames(string gameName,float genre, float met,float pop, int howManyGames)
+        public async Task <ActionResult<List<GameInfoDTO>>> GetPythonRecommendationGames(string gameName,float genre, float met,float pop, int howManyGames, float series_penalty)
         {
-            var games = await pythonRecommendationService.GetRecommendationsAsync(gameName, genre, met, pop, howManyGames);
+            var games = await pythonRecommendationService.GetRecommendationsAsync(gameName, genre, met, pop, howManyGames, series_penalty);
 
             return games == null ? NotFound() : Ok(games);
         }

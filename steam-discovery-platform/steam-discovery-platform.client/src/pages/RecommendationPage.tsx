@@ -23,7 +23,8 @@ function RecommendationPage() {
         genre: 0.4,
         meta: 0.3,
         pop: 0.15,
-        howManyGames: 20
+        howManyGames: 20,
+        series_penalty: 0.4
     });
 
     const fetchGames = async (name: string, w: typeof weights) => {
@@ -33,7 +34,8 @@ function RecommendationPage() {
                 w.genre,
                 w.meta,
                 w.pop,
-                w.howManyGames
+                w.howManyGames,
+                w.series_penalty
             );
             setGame(data);
         } catch (err) {
@@ -129,94 +131,112 @@ function RecommendationPage() {
                             <div className={`filter-collapse ${isExpanded ? 'expanded' : ''}`}>
                                 <div className="px-4 pb-4">
 
-                            {/* weights */}
-                            <div className="row g-4">
-                                <div className="col-md-4">
-                                    <label className="form-label d-flex justify-content-between small opacity-75">
-                                        Genre Importance <span>{Math.round(weights.genre * 100)}%</span>
-                                    </label>
-                                    <input
-                                        type="range" className="form-range custom-range"
-                                        min="0" max="1" step="0.05" value={weights.genre}
-                                        onChange={(e) => setWeights({ ...weights, genre: parseFloat(e.target.value) })}
-                                    />
-                                </div>
-                                <div className="col-md-4">
-                                    <label className="form-label d-flex justify-content-between small opacity-75">
-                                        Rating (Metacritic) <span>{Math.round(weights.meta * 100)}%</span>
-                                    </label>
-                                    <input
-                                        type="range" className="form-range custom-range"
-                                        min="0" max="1" step="0.05" value={weights.meta}
-                                        onChange={(e) => setWeights({ ...weights, meta: parseFloat(e.target.value) })}
-                                    />
-                                </div>
-                                <div className="col-md-4">
-                                    <label className="form-label d-flex justify-content-between small opacity-75">
-                                        Popularity <span>{Math.round(weights.pop * 100)}%</span>
-                                    </label>
-                                    <input
-                                        type="range" className="form-range custom-range"
-                                        min="0" max="1" step="0.05" value={weights.pop}
-                                        onChange={(e) => setWeights({ ...weights, pop: parseFloat(e.target.value) })}
-                                    />
-                                </div>
-                            </div>
-
-                            {/* limes (border) */}
-                            <hr className="my-4 border-secondary opacity-25" />
-
-                            <div className="row g-2 align-items-center d-flex justify-content-center py-1">
-                                <div className="col-lg-5 col-md-3 ">
-                                    <label className="form-label small opacity-75">Filter results by name</label>
-                                    <div className="input-group">
-                                        <span className="input-group-text bg-dark border-secondary text-secondary">
-                                            <i className="bi bi-search"></i>
-                                        </span>
-                                        <input
-                                            type="text"
-                                            className="form-control bg-dark text-light border-secondary shadow-none"
-                                            placeholder="Search in recommendations..."
-                                            onChange={(e) => setInnerSearch(e.target.value)}
-                                        />
+                                    {/* weights */}
+                                    <div className="row g-4">
+                                        <div className="col-md-4">
+                                            <label className="form-label d-flex justify-content-between small opacity-75">
+                                                Genre Importance <span>{Math.round(weights.genre * 100)}%</span>
+                                            </label>
+                                            <input
+                                                type="range" className="form-range custom-range"
+                                                min="0" max="1" step="0.05" value={weights.genre}
+                                                onChange={(e) => setWeights({ ...weights, genre: parseFloat(e.target.value) })}
+                                            />
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label d-flex justify-content-between small opacity-75">
+                                                Rating (Metacritic) <span>{Math.round(weights.meta * 100)}%</span>
+                                            </label>
+                                            <input
+                                                type="range" className="form-range custom-range"
+                                                min="0" max="1" step="0.05" value={weights.meta}
+                                                onChange={(e) => setWeights({ ...weights, meta: parseFloat(e.target.value) })}
+                                            />
+                                        </div>
+                                        <div className="col-md-4">
+                                            <label className="form-label d-flex justify-content-between small opacity-75">
+                                                Popularity <span>{Math.round(weights.pop * 100)}%</span>
+                                            </label>
+                                            <input
+                                                type="range" className="form-range custom-range"
+                                                min="0" max="1" step="0.05" value={weights.pop}
+                                                onChange={(e) => setWeights({ ...weights, pop: parseFloat(e.target.value) })}
+                                            />
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="col-lg-3 col-md-3 ">
-                                    <label className="form-label small opacity-75 ">Sort by</label>
-                                    <select
-                                        className="form-select bg-dark text-light border-secondary shadow-none"
-                                        onChange={(e) => setSortType(e.target.value)}
-                                    >
-                                        <option value="relevance">Relevance</option>
-                                        <option value="az">Name: A-Z</option>
-                                        <option value="za">Name: Z-A</option>
-                                    </select>
-                                </div>
-                                {/* Games amount */}
-                                <div className="d-flex justify-content-between align-items-center mb-2">
-                                    <label className="form-label small opacity-75 mb-0">How many games</label>
-                                    <input
-                                        type="number"
-                                        className="form-control form-control-sm bg-dark text-light border-secondary text-center"
-                                        style={{ width: '50px', fontSize: '0.75rem', height: '24px' }}
-                                        min="10" max="50"
-                                        value={weights.howManyGames}
-                                        onChange={(e) => setWeights({ ...weights, howManyGames: Math.max(10, Math.min(50, parseInt(e.target.value) || 10)) })}
-                                    />
-                                </div>
-                                <input
-                                    type="range" className="form-range custom-range"
-                                    min="10" max="50" step="1" value={weights.howManyGames}
-                                    onChange={(e) => setWeights({ ...weights, howManyGames: parseInt(e.target.value) })}
-                                />
 
-                            </div>
-                           
-                            <div className="mt-3 pt-2 d-flex justify-content-end border-top border-secondary border-opacity-10">
-                                <small className="opacity-50">
-                                    Found: <span className="text-danger fw-bold">{filteredGames.length} games</span>
-                                </small>
-                            </div>
+                                    {/* Limes (border) */}
+                                    <hr className="my-4 border-secondary opacity-25" />
+
+                                    <div className="py-1">
+                                        {/* Górny rz¹d: Wyszukiwarka i Sortowanie */}
+                                        <div className="row g-3 align-items-center justify-content-center mb-4">
+                                            <div className="col-lg-5 col-md-6">
+                                                <label className="form-label small opacity-75">Filter results by name</label>
+                                                <div className="input-group">
+                                                    <span className="input-group-text bg-dark border-secondary text-secondary">
+                                                        <i className="bi bi-search"></i>
+                                                    </span>
+                                                    <input
+                                                        type="text"
+                                                        className="form-control bg-dark text-light border-secondary shadow-none"
+                                                        placeholder="Search in recommendations..."
+                                                        onChange={(e) => setInnerSearch(e.target.value)}
+                                                    />
+                                                </div>
+                                            </div>
+                                            <div className="col-lg-5 col-md-6">
+                                                <label className="form-label small opacity-75">Sort by</label>
+                                                <select
+                                                    className="form-select bg-dark text-light border-secondary shadow-none"
+                                                    onChange={(e) => setSortType(e.target.value)}
+                                                >
+                                                    <option value="relevance">Relevance</option>
+                                                    <option value="az">Name: A-Z</option>
+                                                    <option value="za">Name: Z-A</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        {/* Dolny rz¹d: Suwaki obok siebie */}
+                                        <div className="row g-4 justify-content-center">
+                                            {/* Kontener: Iloœæ gier */}
+                                            <div className="col-lg-5 col-md-6">
+                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                    <label className="form-label small opacity-75 mb-0">How many games</label>
+                                                    <span className="badge bg-danger opacity-75">{weights.howManyGames}</span>
+                                                </div>
+                                                <input
+                                                    type="range"
+                                                    className="form-range custom-range"
+                                                    min="10" max="50" step="1"
+                                                    value={weights.howManyGames}
+                                                    onChange={(e) => setWeights({ ...weights, howManyGames: parseInt(e.target.value) })}
+                                                />
+                                            </div>
+
+                                            {/* Kontener: Kara za seriê */}
+                                            <div className="col-lg-5 col-md-6">
+                                                <div className="d-flex justify-content-between align-items-center mb-2">
+                                                    <label className="form-label small opacity-75 mb-0">Penalty for same series</label>
+                                                </div>
+                                                <input
+                                                    type="range"
+                                                    className="form-range custom-range"
+                                                    min="0" max="1" step="0.05"
+                                                    value={weights.series_penalty}
+                                                    onChange={(e) => setWeights({ ...weights, series_penalty: parseFloat(e.target.value) })}
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div className="mt-3 pt-2 d-flex justify-content-end border-top border-secondary border-opacity-10">
+                                        <small className="opacity-50">
+                                            Found: <span className="text-danger fw-bold">{filteredGames.length} games</span>
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -275,7 +295,7 @@ function RecommendationPage() {
                             !loading && (
                                 <div className="col-12 text-center py-5">
                                     <i className="bi bi-exclamation-circle fs-1 text-muted opacity-25 mb-3 d-block"></i>
-                                    <h5 className="text-muted">No games match your current filters.</h5>
+                                    <h5 className="text-light">No games match your current filters.</h5>
                                     <p className="small text-secondary">Try adjusting the search or sliders.</p>
                                 </div>
                             )
