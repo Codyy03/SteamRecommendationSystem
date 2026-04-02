@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 
 function LoginPage() {
@@ -75,7 +74,8 @@ function LoginPage() {
 
                                 {/* login button */}
                                 <button className="btn btn-danger w-100 py-2 fw-bold mb-3 shadow-sm border-0"
-                                    style={{ background: 'linear-gradient(to right, #e44d26, #f16529)' }}>
+                                    style={{ background: 'linear-gradient(to right, #e44d26, #f16529)' }}
+                                                                >
                                     Sign In
                                 </button>
 
@@ -93,9 +93,9 @@ function LoginPage() {
                             {/* registration link */}
                             <div className="text-center mt-4">
                                 <p className="small text-secondary mb-0">Don't have an account?</p>
-                                <a href="#" className="text-light fw-bold text-decoration-none hover-danger">
+                                <Link to="/registration" className="text-light fw-bold text-decoration-none hover-danger">
                                     Join for Free
-                                </a>
+                                </Link>
                             </div>
                         </div>
                     </div>

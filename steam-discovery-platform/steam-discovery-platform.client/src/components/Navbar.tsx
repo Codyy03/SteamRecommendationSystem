@@ -16,7 +16,8 @@ const Navbar: React.FC = () => {
                     onClick={() => navigateToLogin('/login')}>
                     Sign In
                 </button>
-                <button className="btn btn-danger btn-sm fw-bold px-3 rounded-pill shadow-sm">
+                <button className="btn btn-danger btn-sm fw-bold px-3 rounded-pill shadow-sm"
+                    onClick={() => navigateToLogin('/registration')}>
                     Register
                 </button>
             </div>

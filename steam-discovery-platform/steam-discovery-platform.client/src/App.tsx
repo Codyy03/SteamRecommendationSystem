@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import RecommendationPage from './pages/RecommendationPage';
 import GameDetailsPage from './pages/GameDetailsPage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 
 function App() {
     return (
@@ -16,6 +17,7 @@ function App() {
 
                 </Route>
                     <Route path="/login" element={<LoginPage />} />
+                    <Route path="/registration" element={<RegisterPage />} />
             </Routes>
         </BrowserRouter>
     );
