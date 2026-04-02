@@ -3,6 +3,7 @@ import Layout from './layout/Layout';
 import HomePage from './pages/HomePage';
 import RecommendationPage from './pages/RecommendationPage';
 import GameDetailsPage from './pages/GameDetailsPage';
+import LoginPage from './pages/LoginPage';
 
 function App() {
     return (
@@ -11,8 +12,10 @@ function App() {
                 <Route element={<Layout />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/recommendations/:gameName" element={<RecommendationPage />} />
-                    <Route path="/gameInfo/:id" element={<GameDetailsPage/>}/>
+                    <Route path="/gameInfo/:id" element={<GameDetailsPage />} />
+
                 </Route>
+                    <Route path="/login" element={<LoginPage />} />
             </Routes>
         </BrowserRouter>
     );
