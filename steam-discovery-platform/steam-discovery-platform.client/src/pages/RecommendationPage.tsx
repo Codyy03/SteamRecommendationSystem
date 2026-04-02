@@ -6,6 +6,12 @@ import { getPythonRecomentationGamesByName } from '../services/pythonRecommendat
 import './recommendationPage.css'
 
 function RecommendationPage() {
+    interface PythonRecommendationResponse {
+        is_cold_start: boolean;
+        base_game: string;
+        recommendations: Array<GameInfoDTO>;
+    }
+
     interface GameInfoDTO {
         appid: string;
         name: string;
@@ -13,6 +19,7 @@ function RecommendationPage() {
         headerImage: string;
     }
     const [games, setGame] = useState<GameInfoDTO[]>([]);
+    const [pythonInfo, setPythonInfo] = useState<PythonRecommendationResponse>();
 
     const [loading, setLoading] = useState(true);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -37,7 +44,9 @@ function RecommendationPage() {
                 w.howManyGames,
                 w.series_penalty
             );
-            setGame(data);
+            setPythonInfo(data);
+            setGame(data?.recommendations || []);
+            console.log(String(data?.base_game))
         } catch (err) {
             console.error(err);
         } finally {
@@ -248,8 +257,11 @@ function RecommendationPage() {
                 {/* results*/}
                 <div className="container">
                     <div className="text-center mb-5">
-                        <h2 className="fw-bold">Recommended for: <span className="text-danger">{gameName}</span></h2>
-
+                        {!pythonInfo?.is_cold_start ? < h2 className="fw-bold">Recommended for: <span className="text-danger">{pythonInfo?.base_game}</span></h2>
+                            : <h3 className=" text-danger">
+                                Game '{pythonInfo?.base_game}' not found, generic matches:
+                            </h3>}
+                                    
                         <div style={{ height: '30px' }} className="mt-2 d-flex justify-content-center align-items-center">
                             {isUpdating && (
                                 <div className="d-flex align-items-center text-danger">

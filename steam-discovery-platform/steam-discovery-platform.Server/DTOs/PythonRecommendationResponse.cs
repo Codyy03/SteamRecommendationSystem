@@ -11,6 +11,6 @@ namespace steam_discovery_platform.Server.DTOs
         public string BaseGame { get; set; }
 
         [JsonPropertyName("recommendations")]
-        public List<PythonGameRaw> Recommendations { get; set; }
+        public List<GameInfoDTO> Recommendations { get; set; }
     }
 }

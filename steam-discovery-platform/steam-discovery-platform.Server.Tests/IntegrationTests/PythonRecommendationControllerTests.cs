@@ -19,10 +19,19 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
         {
             // Arrange
             var mockService = new Mock<IPythonRecommendationService>();
-            var expectedGames = new List<GameInfoDTO> { new GameInfoDTO { Appid = 1, Name = "Test Game" } };
 
-            mockService.Setup(s => s.GetRecommendationsAsync(It.IsAny<string>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<float>(), It.IsAny<int>(), It.IsAny<float>()))
-                       .ReturnsAsync(expectedGames);
+            // Zmieniamy na pojedynczy obiekt Response, a nie listę
+            var expectedResponse = new PythonRecommendationResponse
+            {
+                IsColdStart = false,
+                BaseGame = "Cyberpunk 2077",
+                Recommendations = new List<GameInfoDTO> { new GameInfoDTO { Appid = 1, Name = "Test Game" } }
+            };
+
+            mockService.Setup(s => s.GetRecommendationsAsync(
+                It.IsAny<string>(), It.IsAny<float>(), It.IsAny<float>(),
+                It.IsAny<float>(), It.IsAny<int>(), It.IsAny<float>()))
+                .ReturnsAsync(expectedResponse);
 
             var controller = new PythonRecommendationController(mockService.Object);
 
@@ -31,9 +40,12 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
 
             // Assert
             var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
-            var model = okResult.Value.Should().BeAssignableTo<List<GameInfoDTO>>().Subject;
-            model.Should().HaveCount(1);
-            model[0].Name.Should().Be("Test Game");
+            // Sprawdzamy, czy Value to PythonRecommendationResponse
+            var model = okResult.Value.Should().BeOfType<PythonRecommendationResponse>().Subject;
+
+            model.BaseGame.Should().Be("Cyberpunk 2077");
+            model.Recommendations.Should().HaveCount(1);
+            model.Recommendations[0].Name.Should().Be("Test Game");
         }
 
         [Fact]
@@ -41,7 +53,7 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
         {
             // 1. Setup InMemory Database
             var options = new DbContextOptionsBuilder<SteamDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestDb")
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unikalna nazwa bazy dla testu
                 .Options;
 
             using var context = new SteamDbContext(options);
@@ -53,7 +65,13 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             var response = new HttpResponseMessage
             {
                 StatusCode = HttpStatusCode.OK,
-                Content = JsonContent.Create(new { recommendations = new[] { new { appid = 10 } } })
+                // Symulujemy JSONa, którego zwraca Python (z polami base_game i is_cold_start)
+                Content = JsonContent.Create(new
+                {
+                    base_game = "Witcher",
+                    is_cold_start = false,
+                    recommendations = new[] { new { appid = 10 } }
+                })
             };
 
             handlerMock.Protected()
@@ -67,9 +85,11 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             var result = await service.GetRecommendationsAsync("Witcher", 0.5f, 0.5f, 0.5f, 1, 0);
 
             // 4. Assert
-            result.Should().NotBeEmpty();
-            result[0].Appid.Should().Be(10);
-            result[0].Name.Should().Be("Witcher 3");
+            result.Should().NotBeNull();
+            result.IsColdStart.Should().BeFalse();
+            result.Recommendations.Should().NotBeEmpty();
+            result.Recommendations[0].Appid.Should().Be(10);
+            result.Recommendations[0].Name.Should().Be("Witcher 3");
         }
     }
 }
