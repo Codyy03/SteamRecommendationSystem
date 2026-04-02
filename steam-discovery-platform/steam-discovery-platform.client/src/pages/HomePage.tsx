@@ -51,7 +51,17 @@ function HomePage() {
         fetchGames();
     }, []);
 
-    if (loading) return <p>Loading...</p>;
+    if (loading) {
+        return (
+            <div className="container-fluid min-vh-100 main-bg-gradient d-flex align-items-center justify-content-center">
+                <div className="loader-container">
+                    <div className="spinner-border spinner-steam mb-3" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const handleTagClick = async (genre: string) => {
         setActiveGenre(genre);
