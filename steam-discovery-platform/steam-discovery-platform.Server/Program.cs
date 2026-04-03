@@ -25,6 +25,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddHttpClient<IPythonRecommendationService, PythonRecommendationService>();
+builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
 
 app.UseDefaultFiles();

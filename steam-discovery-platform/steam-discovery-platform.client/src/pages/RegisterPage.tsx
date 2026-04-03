@@ -1,6 +1,72 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 function RegisterPage() {
+
+    interface RegisterErrors {
+        username?: string;
+        email?: string;
+        password?: string;
+        confirmPassword?: string;
+        [key: string]: string | undefined;
+    }
+
+    interface RegisterData {
+        username: string;
+        email: string;
+        password: string;
+        confirmPassword: string;
+    }
+
+    const [formData, setFormData] = useState<RegisterData>({
+        username: '',
+        email: '',
+        password: '',
+        confirmPassword: ''
+    });
+
+    const [errors, setErrors] = useState<RegisterErrors>({});
+
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+
+        if (errors[name]) {
+            setErrors(prev => ({ ...prev, [name]: '' }));
+        }
+    };
+
+    const validate = (): boolean => {
+        let newErrors: RegisterErrors = {};
+
+        if (formData.username.length < 3) {
+            newErrors.username = "Username must be at least 3 characters.";
+        }
+
+        if (!formData.email.includes('@')) {
+            newErrors.email = "Please enter a valid email.";
+        }
+
+        if (formData.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters.";
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match!";
+        }
+
+        setErrors(newErrors);
+
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        if (validate()) {
+            console.log("Valid data:", formData);
+        }
+    };
+
     return (
         <div className="container-fluid min-vh-100 d-flex justify-content-center bg-dark text-light"
             style={{
@@ -35,71 +101,87 @@ function RegisterPage() {
                                 <p className="small text-secondary opacity-75">Join the Steam Discovery community</p>
                             </div>
 
-                            <form>
+                            <form onSubmit={handleSubmit}>
                                 {/* Username */}
                                 <div className="mb-3">
-                                    <label className="form-label small text-secondary uppercase">Username</label>
+                                    <label className="form-label small text-light uppercase">Username</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-black border-secondary text-secondary">
+                                        <span className="input-group-text bg-black border-dark text-secondary">
                                             <i className="bi bi-person-badge"></i>
                                         </span>
                                         <input
+                                            name="username"
                                             type="text"
-                                            className="form-control bg-black text-light border-secondary shadow-none"
+                                            className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder="Choose a public name"
                                             maxLength={100}
+                                            value={formData.username}
+                                            onChange={handleChange}
                                             required
                                         />
                                     </div>
+                                    {errors.username && <div className="text-danger small mt-1">{errors.username}</div>}
                                 </div>
 
                                 {/* Email */}
                                 <div className="mb-3">
-                                    <label className="form-label small text-secondary uppercase">Email Address</label>
+                                    <label className="form-label small text-light uppercase">Email Address</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-black border-secondary text-secondary">
+                                        <span className="input-group-text bg-black border-dark text-secondary">
                                             <i className="bi bi-envelope-at"></i>
                                         </span>
                                         <input
+                                            name="email"
                                             type="email"
-                                            className="form-control bg-black text-light border-secondary shadow-none"
+                                            className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder="example@domain.com"
                                             maxLength={255}
+                                            value={formData.email}
+                                            onChange={handleChange}
                                             required
                                         />
                                     </div>
+                                    {errors.email && <div className="text-danger small mt-1">{errors.email}</div>}
                                 </div>
 
                                 {/* Password */}
                                 <div className="mb-3">
-                                    <label className="form-label small text-secondary uppercase">Password</label>
+                                    <label className="form-label small text-light uppercase">Password</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-black border-secondary text-secondary">
+                                        <span className="input-group-text bg-black border-dark text-secondary">
                                             <i className="bi bi-key-fill"></i>
                                         </span>
                                         <input
+                                            name="password"
                                             type="password"
-                                            className="form-control bg-black text-light border-secondary shadow-none"
+                                            className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder="Create a strong password"
+                                            value={formData.password}
+                                            onChange={handleChange}
                                             required
                                         />
                                     </div>
+                                    {errors.password && <div className="text-danger small mt-1">{errors.password}</div>}
                                 </div>
 
                                 {/* Confirm Password */}
                                 <div className="mb-4">
-                                    <label className="form-label small text-secondary uppercase">Confirm Password</label>
+                                    <label className="form-label small text-light uppercase">Confirm Password</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-black border-secondary text-secondary">
+                                        <span className="input-group-text bg-black border-dark text-secondary">
                                             <i className="bi bi-shield-lock"></i>
                                         </span>
                                         <input
+                                            name="confirmPassword"
                                             type="password"
-                                            className="form-control bg-black text-light border-secondary shadow-none"
+                                            className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder="Repeat password"
+                                            value={formData.confirmPassword}
+                                            onChange={handleChange}
                                             required
                                         />
                                     </div>
+                                    {errors.confirmPassword && <div className="text-danger small mt-1">{errors.confirmPassword}</div>}
                                 </div>
 
                                 {/* register button */}

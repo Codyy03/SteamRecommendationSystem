@@ -43,12 +43,12 @@ function LoginPage() {
                                 <div className="mb-3">
                                     <label className="form-label small text-light uppercase">Account Name</label>
                                     <div className="input-group">
-                                        <span className="input-group-text bg-black border-secondary text-secondary">
+                                        <span className="input-group-text bg-black border-dark text-secondary">
                                             <i className="bi bi-person-fill"></i>
                                         </span>
                                         <input
                                             type="text"
-                                            className="form-control bg-black text-light border-secondary shadow-none"
+                                            className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder="Your username"
                                         />
                                     </div>
@@ -56,17 +56,17 @@ function LoginPage() {
 
                                 {/* Input: Password */}
                                 <div className="mb-4">
-                                    <div className="d-flex justify-content-between">
+                                    <div className="d-flex justify-content-between border-dark shadow-none">
                                         <label className="form-label small text-light">Password</label>
                                         <a href="#" className="small text-danger text-decoration-none opacity-75">Forgot?</a>
                                     </div>
-                                    <div className="input-group">
-                                        <span className="input-group-text bg-black border-secondary text-secondary">
+                                    <div className="input-group border-dark shadow-none">
+                                        <span className="input-group-text bg-black border-dark text-secondary">
                                             <i className="bi bi-lock-fill"></i>
                                         </span>
                                         <input
                                             type="password"
-                                            className="form-control bg-black text-light border-secondary shadow-none"
+                                            className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder=""
                                         />
                                     </div>
