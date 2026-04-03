@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 function RegisterPage() {
 
@@ -60,10 +60,26 @@ function RegisterPage() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (validate()) {
             console.log("Valid data:", formData);
+        }
+
+        const response = await fetch("https://localhost:7179/api/users/register", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+        });
+
+        if (response.ok) {
+            navigate("/login");
+            alert("success");
+        } else {
+            const errorMsg = await response.text();
+            alert("Error" + errorMsg);
         }
     };
 
