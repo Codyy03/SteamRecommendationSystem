@@ -52,11 +52,11 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
         public async Task GetRecommendationsAsync_ReturnsMappedGames_FromMockedPython()
         {
             // 1. Setup InMemory Database
-            var options = new DbContextOptionsBuilder<SteamDbContext>()
+            var options = new DbContextOptionsBuilder<SteamdbContext>()
                 .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unikalna nazwa bazy dla testu
                 .Options;
 
-            using var context = new SteamDbContext(options);
+            using var context = new SteamdbContext(options);
             context.Applications.Add(new Application { Appid = 10, Name = "Witcher 3", HeaderImage = "img" });
             await context.SaveChangesAsync();
 

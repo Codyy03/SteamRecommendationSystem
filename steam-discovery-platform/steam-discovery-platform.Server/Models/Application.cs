@@ -37,6 +37,8 @@ public partial class Application
 
     public DateTime? CreatedAt { get; set; }
 
+    public string? Background { get; set; }
+
     public virtual ICollection<UserLibrary> UserLibraries { get; set; } = new List<UserLibrary>();
 
     public virtual ICollection<Category> Categories { get; set; } = new List<Category>();

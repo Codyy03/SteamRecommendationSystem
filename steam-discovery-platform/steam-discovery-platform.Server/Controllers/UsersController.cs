@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Interfaces;
+using steam_discovery_platform.Server.Services;
 
 namespace steam_discovery_platform.Server.Controllers
 {
@@ -37,6 +38,20 @@ namespace steam_discovery_platform.Server.Controllers
             };
 
             return CreatedAtAction(nameof(GetUser), new { id = response.Id }, response);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult<LoginResponseDTO>> Login([FromBody] LoginDTO loginDTO)
+        {
+            try
+            {
+                var result = await userService.Login(loginDTO);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
         }
     }
 }

@@ -5,7 +5,8 @@ namespace steam_discovery_platform.Server.Interfaces
 {
     public interface IUserService
     {
-       public Task<User> CreateUser(UserRegisterDTO userRegisterDTO);
+        public Task<User> CreateUser(UserRegisterDTO userRegisterDTO);
         public Task<UserDTO> GetUser(Guid id);
+        public Task<LoginResponseDTO> Login(LoginDTO loginDTO);
     }
 }

@@ -11,9 +11,9 @@ namespace steam_discovery_platform.Server.Services
     /// </summary>
     public class ApplicationService : IApplicationService
     {
-        readonly SteamDbContext context;
+        readonly SteamdbContext context;
         
-        public ApplicationService(SteamDbContext context)
+        public ApplicationService(SteamdbContext context)
         {
             this.context = context;
         }

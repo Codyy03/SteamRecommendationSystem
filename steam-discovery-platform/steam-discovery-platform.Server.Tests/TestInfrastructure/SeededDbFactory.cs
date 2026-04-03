@@ -20,7 +20,7 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
             {
                 // 1. Comprehensive cleanup of all options assigned by the Npgsql provider
                 var descriptorsToRemove = services.Where(d =>
-                    d.ServiceType == typeof(DbContextOptions<SteamDbContext>) ||
+                    d.ServiceType == typeof(DbContextOptions<SteamdbContext>) ||
                     d.ServiceType == typeof(DbContextOptions) ||
                     (d.ServiceType.FullName != null && d.ServiceType.FullName.Contains("IDbContextOptionsConfiguration"))).ToList();
 
@@ -39,14 +39,14 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
                 // 2. Unique database name for each Factory instance solves concurrent test errors
                 string uniqueDbName = $"TestDb_{Guid.NewGuid()}";
 
-                services.AddDbContext<SteamDbContext>(options =>
+                services.AddDbContext<SteamdbContext>(options =>
                 {
                     options.UseInMemoryDatabase(uniqueDbName);
                 });
 
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
-                var db = scope.ServiceProvider.GetRequiredService<SteamDbContext>();
+                var db = scope.ServiceProvider.GetRequiredService<SteamdbContext>();
 
                 db.Database.EnsureDeleted();
                 db.Database.EnsureCreated();

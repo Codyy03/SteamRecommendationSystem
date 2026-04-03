@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using steam_discovery_platform.Server.Helpers;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
 using steam_discovery_platform.Server.Services;
@@ -12,7 +13,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddDbContext<SteamDbContext>(options =>
+builder.Services.AddDbContext<SteamdbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddCors(options =>
@@ -22,6 +23,8 @@ builder.Services.AddCors(options =>
                           .AllowAnyMethod()
                           .AllowAnyHeader());
 });
+
+builder.Services.AddScoped<JwtTokenHelper>();
 
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddHttpClient<IPythonRecommendationService, PythonRecommendationService>();

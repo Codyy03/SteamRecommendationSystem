@@ -12,8 +12,8 @@ namespace steam_discovery_platform.Server.Services
     public class PythonRecommendationService : IPythonRecommendationService
     {
         readonly HttpClient httpClient;
-        readonly SteamDbContext context;
-        public PythonRecommendationService(HttpClient httpClient, IApplicationService appService, SteamDbContext context)
+        readonly SteamdbContext context;
+        public PythonRecommendationService(HttpClient httpClient, IApplicationService appService, SteamdbContext context)
         {
             this.httpClient = httpClient;
             this.context = context;

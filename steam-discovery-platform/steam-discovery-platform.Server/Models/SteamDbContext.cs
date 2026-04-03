@@ -4,14 +4,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace steam_discovery_platform.Server.Models;
 
-public partial class SteamDbContext : DbContext
+public partial class SteamdbContext : DbContext
 {
-    public SteamDbContext(DbContextOptions<SteamDbContext> options)
+    public SteamdbContext(DbContextOptions<SteamdbContext> options)
         : base(options)
     {
     }
 
     public virtual DbSet<Application> Applications { get; set; }
+
+    public virtual DbSet<ApplicationsStaging> ApplicationsStagings { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
 
@@ -23,10 +25,11 @@ public partial class SteamDbContext : DbContext
 
     public virtual DbSet<Publisher> Publishers { get; set; }
 
+    public virtual DbSet<RefreshToken> RefreshTokens { get; set; }
+
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserLibrary> UserLibraries { get; set; }
-
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -39,6 +42,7 @@ public partial class SteamDbContext : DbContext
             entity.Property(e => e.Appid)
                 .ValueGeneratedNever()
                 .HasColumnName("appid");
+            entity.Property(e => e.Background).HasColumnName("background");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnName("created_at");
@@ -86,6 +90,7 @@ public partial class SteamDbContext : DbContext
                     {
                         j.HasKey("Appid", "CategoryId").HasName("application_categories_pkey");
                         j.ToTable("application_categories");
+                        j.HasIndex(new[] { "CategoryId" }, "IX_application_categories_category_id");
                         j.IndexerProperty<int>("Appid").HasColumnName("appid");
                         j.IndexerProperty<int>("CategoryId").HasColumnName("category_id");
                     });
@@ -103,6 +108,7 @@ public partial class SteamDbContext : DbContext
                     {
                         j.HasKey("Appid", "DeveloperId").HasName("application_developers_pkey");
                         j.ToTable("application_developers");
+                        j.HasIndex(new[] { "DeveloperId" }, "IX_application_developers_developer_id");
                         j.IndexerProperty<int>("Appid").HasColumnName("appid");
                         j.IndexerProperty<int>("DeveloperId").HasColumnName("developer_id");
                     });
@@ -120,9 +126,48 @@ public partial class SteamDbContext : DbContext
                     {
                         j.HasKey("Appid", "PlatformId").HasName("application_platforms_pkey");
                         j.ToTable("application_platforms");
+                        j.HasIndex(new[] { "PlatformId" }, "IX_application_platforms_platform_id");
                         j.IndexerProperty<int>("Appid").HasColumnName("appid");
                         j.IndexerProperty<int>("PlatformId").HasColumnName("platform_id");
                     });
+        });
+
+        modelBuilder.Entity<ApplicationsStaging>(entity =>
+        {
+            entity
+                .HasNoKey()
+                .ToTable("applications_staging");
+
+            entity.Property(e => e.Appid).HasColumnName("appid");
+            entity.Property(e => e.Background).HasColumnName("background");
+            entity.Property(e => e.CreatedAt).HasColumnName("created_at");
+            entity.Property(e => e.HeaderImage).HasColumnName("header_image");
+            entity.Property(e => e.IsFree).HasColumnName("is_free");
+            entity.Property(e => e.MatAchievementCount).HasColumnName("mat_achievement_count");
+            entity.Property(e => e.MatCurrency).HasColumnName("mat_currency");
+            entity.Property(e => e.MatDiscountPercent).HasColumnName("mat_discount_percent");
+            entity.Property(e => e.MatFinalPrice).HasColumnName("mat_final_price");
+            entity.Property(e => e.MatInitialPrice).HasColumnName("mat_initial_price");
+            entity.Property(e => e.MatPcGraphicsMin).HasColumnName("mat_pc_graphics_min");
+            entity.Property(e => e.MatPcGraphicsRec).HasColumnName("mat_pc_graphics_rec");
+            entity.Property(e => e.MatPcMemoryMin).HasColumnName("mat_pc_memory_min");
+            entity.Property(e => e.MatPcMemoryRec).HasColumnName("mat_pc_memory_rec");
+            entity.Property(e => e.MatPcOsMin).HasColumnName("mat_pc_os_min");
+            entity.Property(e => e.MatPcOsRec).HasColumnName("mat_pc_os_rec");
+            entity.Property(e => e.MatPcProcessorMin).HasColumnName("mat_pc_processor_min");
+            entity.Property(e => e.MatPcProcessorRec).HasColumnName("mat_pc_processor_rec");
+            entity.Property(e => e.MatSupportsLinux).HasColumnName("mat_supports_linux");
+            entity.Property(e => e.MatSupportsMac).HasColumnName("mat_supports_mac");
+            entity.Property(e => e.MatSupportsWindows).HasColumnName("mat_supports_windows");
+            entity.Property(e => e.MetacriticScore).HasColumnName("metacritic_score");
+            entity.Property(e => e.Name).HasColumnName("name");
+            entity.Property(e => e.RecommendationsTotal).HasColumnName("recommendations_total");
+            entity.Property(e => e.ReleaseDate).HasColumnName("release_date");
+            entity.Property(e => e.RequiredAge).HasColumnName("required_age");
+            entity.Property(e => e.ShortDescription).HasColumnName("short_description");
+            entity.Property(e => e.SupportedLanguages).HasColumnName("supported_languages");
+            entity.Property(e => e.Type).HasColumnName("type");
+            entity.Property(e => e.UpdatedAt).HasColumnName("updated_at");
         });
 
         modelBuilder.Entity<Category>(entity =>
@@ -179,6 +224,7 @@ public partial class SteamDbContext : DbContext
                     {
                         j.HasKey("GenreId", "Appid").HasName("application_genres_pkey");
                         j.ToTable("application_genres");
+                        j.HasIndex(new[] { "Appid" }, "IX_application_genres_appid");
                         j.IndexerProperty<int>("GenreId").HasColumnName("genre_id");
                         j.IndexerProperty<int>("Appid").HasColumnName("appid");
                     });
@@ -224,9 +270,32 @@ public partial class SteamDbContext : DbContext
                     {
                         j.HasKey("PublisherId", "Appid").HasName("application_publishers_pkey");
                         j.ToTable("application_publishers");
+                        j.HasIndex(new[] { "Appid" }, "IX_application_publishers_appid");
                         j.IndexerProperty<int>("PublisherId").HasColumnName("publisher_id");
                         j.IndexerProperty<int>("Appid").HasColumnName("appid");
                     });
+        });
+
+        modelBuilder.Entity<RefreshToken>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("refresh_tokens_pkey");
+
+            entity.ToTable("refresh_tokens");
+
+            entity.Property(e => e.Id)
+                .HasDefaultValueSql("gen_random_uuid()")
+                .HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnName("created_at");
+            entity.Property(e => e.ExpiresAt).HasColumnName("expires_at");
+            entity.Property(e => e.Token).HasColumnName("token");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.User).WithMany(p => p.RefreshTokens)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("refresh_tokens_user_id_fkey");
         });
 
         modelBuilder.Entity<User>(entity =>
@@ -247,6 +316,10 @@ public partial class SteamDbContext : DbContext
                 .HasMaxLength(255)
                 .HasColumnName("email");
             entity.Property(e => e.PasswordHash).HasColumnName("password_hash");
+            entity.Property(e => e.Role)
+                .HasMaxLength(50)
+                .HasDefaultValueSql("'User'::character varying")
+                .HasColumnName("role");
             entity.Property(e => e.Username)
                 .HasMaxLength(100)
                 .HasColumnName("username");
@@ -264,6 +337,7 @@ public partial class SteamDbContext : DbContext
                     {
                         j.HasKey("UserId", "Appid").HasName("user_ignored_games_pkey");
                         j.ToTable("user_ignored_games");
+                        j.HasIndex(new[] { "Appid" }, "IX_user_ignored_games_appid");
                         j.IndexerProperty<Guid>("UserId").HasColumnName("user_id");
                         j.IndexerProperty<int>("Appid").HasColumnName("appid");
                     });
@@ -274,6 +348,8 @@ public partial class SteamDbContext : DbContext
             entity.HasKey(e => new { e.UserId, e.Appid }).HasName("user_libraries_pkey");
 
             entity.ToTable("user_libraries");
+
+            entity.HasIndex(e => e.Appid, "IX_user_libraries_appid");
 
             entity.Property(e => e.UserId).HasColumnName("user_id");
             entity.Property(e => e.Appid).HasColumnName("appid");
