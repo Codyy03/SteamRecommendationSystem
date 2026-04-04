@@ -1,6 +1,43 @@
-import { Link } from 'react-router-dom';
-
+import { Link, useNavigate } from 'react-router-dom';
+import { useState } from 'react'
+import { useAuth } from '../context/useAuth';
+import axios from 'axios';
 function LoginPage() {
+    const [userName, setUserNameInput] = useState("");
+    const [password, setPassword] = useState("");
+    const [error, setError] = useState("");
+    const navigate = useNavigate();
+    const { login } = useAuth();
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setError("");
+
+        try {
+            const res = await axios.post("https://localhost:7179/api/users/login", {
+                userName,
+                password
+            });
+            const { accessToken, refreshToken } = res.data;
+
+            if (accessToken && refreshToken) {
+                login(accessToken, refreshToken);
+                navigate("/");
+            } else {
+                setError("Invalid email or password");
+            }
+        } catch (err) {
+            if (axios.isAxiosError(err)) {
+                const message = err.response?.data;
+                if (typeof message === "string") {
+                    setError(message);
+                }
+            } else {
+                setError("Unexpected error occurred.");
+            }
+        }
+    };
+
     return (
         <div className="container-fluid min-vh-100 bg-dark text-light"
             style={{
@@ -38,7 +75,8 @@ function LoginPage() {
                                 </p>
                             </div>
 
-                            <form>
+                            <form onSubmit={handleSubmit}>
+                                {error && <div className="alert alert-danger py-2">{error}</div>}
                                 {/* Input: Email / Username */}
                                 <div className="mb-3">
                                     <label className="form-label small text-light uppercase">Account Name</label>
@@ -47,6 +85,8 @@ function LoginPage() {
                                             <i className="bi bi-person-fill"></i>
                                         </span>
                                         <input
+                                            value={userName}
+                                            onChange={(e) => setUserNameInput(e.target.value)}
                                             type="text"
                                             className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder="Your username"
@@ -66,6 +106,8 @@ function LoginPage() {
                                         </span>
                                         <input
                                             type="password"
+                                            value={password}
+                                            onChange={(e) => setPassword(e.target.value)}
                                             className="form-control bg-black text-light border-dark shadow-none"
                                             placeholder=""
                                         />
@@ -75,7 +117,7 @@ function LoginPage() {
                                 {/* login button */}
                                 <button className="btn btn-danger w-100 py-2 fw-bold mb-3 shadow-sm border-0"
                                     style={{ background: 'linear-gradient(to right, #e44d26, #f16529)' }}
-                                                                >
+                                    type="submit">
                                     Sign In
                                 </button>
 
