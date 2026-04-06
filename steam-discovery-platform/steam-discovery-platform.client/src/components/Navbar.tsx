@@ -44,7 +44,7 @@ const Navbar: React.FC = () => {
                         aria-labelledby="userMenu"
                         style={{ backgroundColor: '#1b2838', borderRadius: '10px' }}>
                         <li>
-                            <Link className="dropdown-item py-2" to="/profile">
+                            <Link className="dropdown-item py-2" to="/me">
                                 <i className="bi bi-person me-2"></i> My Profile
                             </Link>
                         </li>

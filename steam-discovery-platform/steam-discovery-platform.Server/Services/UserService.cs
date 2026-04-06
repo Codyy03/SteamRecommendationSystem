@@ -52,6 +52,7 @@ namespace steam_discovery_platform.Server.Services
 
             return new UserDTO
             {
+                CreatedAt = user.CreatedAt,
                 Username = user.Username,
                 Email = user.Email,
                 Role = user.Role
