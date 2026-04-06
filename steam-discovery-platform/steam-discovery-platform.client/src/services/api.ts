@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL;
+const API_URL = "https://localhost:7179";
 export const api = axios.create({
     baseURL: API_URL,
     withCredentials: true,
@@ -35,7 +35,7 @@ api.interceptors.response.use(
 
         if ((error.response?.status === 401 || error.response?.status === 403) &&
             !originalRequest._retry &&
-            !originalRequest.url.includes("/Auth/refresh")) {
+            !originalRequest.url.includes("/api/Auth/refresh")) {
 
             if (isRefreshing) {
                 return new Promise(resolve => {
@@ -51,7 +51,8 @@ api.interceptors.response.use(
 
             try {
                 const refreshToken = localStorage.getItem("refreshToken");
-                const res = await api.post("/Auth/refresh", { refreshToken });
+                // Dodaj /api/ do adresu odświeżania!
+                const res = await api.post("/api/Auth/refresh", { refreshToken });
                 const { accessToken, refreshToken: newRefreshToken } = res.data;
 
                 localStorage.setItem("token", accessToken);
@@ -64,6 +65,7 @@ api.interceptors.response.use(
             } catch (err) {
                 localStorage.removeItem("token");
                 localStorage.removeItem("refreshToken");
+                console.log(err);
                 window.location.href = "/";
                 return Promise.reject(err);
             } finally {

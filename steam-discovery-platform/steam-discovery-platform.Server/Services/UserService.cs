@@ -5,6 +5,7 @@ using steam_discovery_platform.Server.Helpers;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Numerics;
 
 namespace steam_discovery_platform.Server.Services
@@ -42,6 +43,19 @@ namespace steam_discovery_platform.Server.Services
             await context.SaveChangesAsync();
 
             return user;
+        }
+
+        public async Task<UserDTO> GetMe(Guid userId)
+        {
+            var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
+            if (user == null) throw new Exception("User not found");
+
+            return new UserDTO
+            {
+                Username = user.Username,
+                Email = user.Email,
+                Role = user.Role
+            };
         }
 
         public async Task<UserDTO> GetUser(Guid id)

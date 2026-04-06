@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Services;
+using System.Security.Claims;
 
 namespace steam_discovery_platform.Server.Controllers
 {
@@ -52,6 +54,17 @@ namespace steam_discovery_platform.Server.Controllers
             {
                 return BadRequest(new { message = ex.Message });
             }
+        }
+
+        [HttpGet("me")]
+        public async Task<ActionResult<UserDTO>> GetMe()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            if (userId == null) return Unauthorized();
+
+            var userDto = await userService.GetMe(Guid.Parse(userId));
+            return Ok(userDto);
         }
     }
 }

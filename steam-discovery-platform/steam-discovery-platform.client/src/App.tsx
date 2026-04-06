@@ -6,6 +6,7 @@ import GameDetailsPage from './pages/GameDetailsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { AuthProvider } from './context/AuthContext';
+import UserProfile from "./pages/UserProfile";
 
 function App() {
     return (
@@ -15,7 +16,8 @@ function App() {
                 <Route element={<Layout />}>
                     <Route path="/" element={<HomePage />} />
                     <Route path="/recommendations/:gameName" element={<RecommendationPage />} />
-                    <Route path="/gameInfo/:id" element={<GameDetailsPage />} />
+                        <Route path="/gameInfo/:id" element={<GameDetailsPage />} />
+                        <Route path="/me" element={<UserProfile />} />
 
                 </Route>
                     <Route path="/login" element={<LoginPage />} />

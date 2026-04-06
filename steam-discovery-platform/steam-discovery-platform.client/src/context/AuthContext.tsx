@@ -1,14 +1,14 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import api from "../services/api";
 
-interface JwtPayload {
+export interface JwtPayload {
     name?: string;
     unique_name?: string;
     email?: string;
     exp?: number;
     role?: string;
-    [key: string]: any;
+    [key: string]: unknown;
 }
 
 interface AuthContextType {
@@ -20,6 +20,7 @@ interface AuthContextType {
     refreshAccessToken: () => Promise<void>;
 }
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -27,41 +28,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [userRole, setUserRole] = useState<string | null>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const loadUser = () => {
-            const token = localStorage.getItem("token");
-            if (token) {
-                try {
-                    const decoded = jwtDecode<JwtPayload>(token);
-
-                    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
-                        refreshAccessToken().finally(() => setLoading(false));
-                        return;
-                    }
-
-                    setDecodedUser(decoded);
-
-                    if (decoded.exp) {
-                        const timeout = decoded.exp * 1000 - Date.now() - 5000;
-                        setTimeout(() => {
-                            refreshAccessToken();
-                        }, timeout);
-                    }
-                } catch {
-                    logout();
-                }
-            } else {
-                logout();
-            }
-            setLoading(false);
-        };
-
-        loadUser();
-        window.addEventListener("storage", loadUser);
-        return () => window.removeEventListener("storage", loadUser);
+    const logout = useCallback(() => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("refreshToken");
+        setUserName(null);
+        setUserRole(null);
     }, []);
 
-    const setDecodedUser = (decoded: JwtPayload) => {
+    const setDecodedUser = useCallback((decoded: JwtPayload) => {
         const name =
             decoded.name ??
             decoded.unique_name ??
@@ -73,16 +47,31 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"] ??
             null;
 
-        setUserName(name);
-        setUserRole(role);
-    };
+        setUserName(typeof name === 'string' ? name : null);
+        setUserRole(typeof role === 'string' ? role : null);
+    }, []);
 
-    const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        setUserName(null);
-        setUserRole(null);
-    };
+    const refreshAccessToken = useCallback(async () => {
+        const refreshToken = localStorage.getItem("refreshToken");
+        if (!refreshToken) {
+            logout();
+            return;
+        }
+
+        try {
+            const res = await api.post("/api/Auth/refresh", { refreshToken });
+            const { accessToken, refreshToken: newRefreshToken } = res.data;
+
+            localStorage.setItem("token", accessToken);
+            localStorage.setItem("refreshToken", newRefreshToken);
+
+            const decoded = jwtDecode<JwtPayload>(accessToken);
+            setDecodedUser(decoded);
+        } catch (err) {
+            console.error("Refresh failed", err);
+            logout();
+        }
+    }, [logout, setDecodedUser]);
 
     const login = (accessToken: string, refreshToken: string) => {
         localStorage.setItem("token", accessToken);
@@ -95,37 +84,30 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
     };
 
-    const refreshAccessToken = async () => {
-        const refreshToken = localStorage.getItem("refreshToken");
-        if (!refreshToken) {
-            logout();
-            return;
-        }
+    useEffect(() => {
+        const loadUser = async () => {
+            const token = localStorage.getItem("token");
+            if (token) {
+                try {
+                    const decoded = jwtDecode<JwtPayload>(token);
 
-        try {
-            const res = await api.post("/Auth/refresh", { refreshToken });
-
-            const data = res.data;
-            const newAccessToken = data.accessToken;
-            const newRefreshToken = data.refreshToken;
-
-            localStorage.setItem("token", newAccessToken);
-            localStorage.setItem("refreshToken", newRefreshToken);
-
-            const decoded = jwtDecode<JwtPayload>(newAccessToken);
-            setDecodedUser(decoded);
-
-            if (decoded.exp) {
-                const timeout = decoded.exp * 1000 - Date.now() - 5000;
-                setTimeout(() => {
-                    refreshAccessToken();
-                }, timeout);
+                    if (decoded.exp && decoded.exp * 1000 < Date.now()) {
+                        await refreshAccessToken();
+                    } else {
+                        setDecodedUser(decoded);
+                    }
+                } catch {
+                    logout();
+                }
+            } else {
+                setUserName(null);
+                setUserRole(null);
             }
-        } catch (err) {
-            console.error("Refresh failed", err);
-            logout();
-        }
-    };
+            setLoading(false);
+        };
+
+        loadUser();
+    }, [refreshAccessToken, logout, setDecodedUser]);
 
     return (
         <AuthContext.Provider value={{ userName, userRole, loading, logout, login, refreshAccessToken }}>
