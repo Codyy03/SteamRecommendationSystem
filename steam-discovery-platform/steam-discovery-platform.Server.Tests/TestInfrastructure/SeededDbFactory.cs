@@ -126,6 +126,33 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
 
                 db.Applications.AddRange(app1, app2);
                 db.SaveChanges();
+
+                var passwordHasher = new Microsoft.AspNetCore.Identity.PasswordHasher<User>();
+
+                Guid user1Id = new Guid("00000000-0000-0000-0000-000000000001");
+                var adminUser = new User
+                {
+                    Id = user1Id,
+                    Username = "admin_test",
+                    Email = "admin@test.pl",
+                    Role = "Admin",
+                    CreatedAt = DateTime.UtcNow
+                };
+                adminUser.PasswordHash = passwordHasher.HashPassword(adminUser, "Admin123!");
+
+                var user2Id = Guid.NewGuid();
+                var regularUser = new User
+                {
+                    Id = user2Id,
+                    Username = "user_test",
+                    Email = "user@test.pl",
+                    Role = "User",
+                    CreatedAt = DateTime.UtcNow
+                };
+                regularUser.PasswordHash = passwordHasher.HashPassword(regularUser, "User123!");
+
+                db.Users.AddRange(adminUser, regularUser);
+                db.SaveChanges();
             });
         }
     }
