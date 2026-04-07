@@ -7,6 +7,7 @@ using steam_discovery_platform.Server.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Numerics;
+using steam_discovery_platform.Server.Validation;
 
 namespace steam_discovery_platform.Server.Services
 {
@@ -14,6 +15,7 @@ namespace steam_discovery_platform.Server.Services
     {
         readonly SteamdbContext context;
         readonly JwtTokenHelper jwtHelper;
+        DataValidation dataValidation = new DataValidation();
 
         public UserService(SteamdbContext context, JwtTokenHelper jwtHelper)
         {
@@ -24,10 +26,10 @@ namespace steam_discovery_platform.Server.Services
         public async Task<User> CreateUser(UserRegisterDTO userRegisterDTO)
         {
             if (await context.Users.AnyAsync(u => u.Username == userRegisterDTO.userName))
-                throw new Exception("User name must be unique");
+                throw new ValidationException("User name must be unique");
 
             if (await context.Users.AnyAsync(u => u.Email == userRegisterDTO.Email))
-                throw new Exception("Email must be unique");
+                throw new ValidationException("Email must be unique");
 
             var hasher = new PasswordHasher<User>();
 
@@ -48,7 +50,7 @@ namespace steam_discovery_platform.Server.Services
         public async Task<UserDTO> GetMe(Guid userId)
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
-            if (user == null) throw new Exception("User not found");
+            if (user == null) throw new ValidationException("User not found");
 
             return new UserDTO
             {
@@ -71,7 +73,7 @@ namespace steam_discovery_platform.Server.Services
                 }).FirstOrDefaultAsync();
 
             if (userDTO == null)
-                throw new Exception("User do not exists");
+                throw new ValidationException("User do not exists");
 
             return userDTO;
         }
@@ -87,7 +89,7 @@ namespace steam_discovery_platform.Server.Services
 
             if (user == null || hasher.VerifyHashedPassword(user, user.PasswordHash, loginDTO.Password) == PasswordVerificationResult.Failed)
             {
-                throw new Exception("Invalid username or password");
+                throw new ValidationException("Invalid username or password");
             }
 
             var oldTokens = context.RefreshTokens.Where(rt => rt.UserId == user.Id);
@@ -112,6 +114,36 @@ namespace steam_discovery_platform.Server.Services
                 AccessToken = accessToken,
                 RefreshToken = refreshTokenValue,
                 Username = user.Username
+            };
+        }
+
+        public async Task<UserDTO> UpdateUser(UpdateUserDTO updateUserDTO)
+        {
+            var existing = await context.Users.FindAsync(updateUserDTO.UserId);
+
+            if (existing == null)
+                throw new Exception("Error");
+
+            var NameErrors = dataValidation.ValidateName(updateUserDTO.UserName);
+
+            if (NameErrors.Any())
+                throw new ValidationException(string.Join(" ", NameErrors));
+
+            var EmailErrors = dataValidation.ValidateEmail(updateUserDTO.Email);
+
+            if (EmailErrors.Any())
+                throw new ValidationException(string.Join(" ", EmailErrors));
+
+            existing.Username = updateUserDTO.UserName;
+            existing.Email = updateUserDTO.Email;
+
+            await context.SaveChangesAsync();
+
+            return new UserDTO
+            {
+                Username = existing.Username,
+                CreatedAt = existing.CreatedAt,
+                Email = existing.Email,
             };
         }
     }
