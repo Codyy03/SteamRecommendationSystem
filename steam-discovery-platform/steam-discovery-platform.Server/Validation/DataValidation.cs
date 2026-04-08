@@ -21,9 +21,9 @@ namespace steam_discovery_platform.Server.Validation
         {
             var errors = new List<string>();
 
-            if (string.IsNullOrWhiteSpace(name))
+            if (string.IsNullOrWhiteSpace(name) || name.Length < 3)
             {
-                errors.Add("Name is required.");
+                errors.Add("Username must be at least 3 characters.");
                 return errors;
             }
             return errors;
