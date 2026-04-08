@@ -1,13 +1,9 @@
 ﻿using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Tests.TestInfrastructure;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 
 namespace steam_discovery_platform.Server.Tests.IntegrationTests
 {
@@ -86,6 +82,72 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             var response = await client.PostAsJsonAsync("/api/Users/login", loginDto);
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetMe_Unauthorized_WithoutToken()
+        {
+            var client = new SeededDbFactory().CreateClient();
+
+            var response = await client.GetAsync("/api/users/me");
+
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetMe_ReturnUser_WhenAuthorized()
+        {
+            var factory = new SeededDbFactory();
+            var client = factory.CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("00000000-0000-0000-0000-000000000001", "admin@test.pl", "admin_test", "Admin");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("/api/users/me");
+
+            // Assert
+            response.EnsureSuccessStatusCode();
+
+            var dto = await response.Content.ReadFromJsonAsync<UserDTO>();
+
+            Assert.NotNull(dto);
+            Assert.Equal("admin_test", dto.Username);
+            Assert.Equal("admin@test.pl", dto.Email);
+            Assert.Equal("Admin", dto.Role);
+        }
+
+        [Fact]
+        public async Task UpdateUser_ReturnOk()
+        {
+            var factory = new SeededDbFactory();
+            var client = factory.CreateClient();
+
+            var token = TestJwtTokenHelper.GenerateTestToken("00000000-0000-0000-0000-000000000001", "admin@test.pl", "admin_test", "Admin");
+            client.DefaultRequestHeaders.Authorization =
+                new AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync("/api/users/me");
+            response.EnsureSuccessStatusCode();
+
+            var dto = await response.Content.ReadFromJsonAsync<UserDTO>();
+            Assert.NotNull(dto);
+
+            var updateDTO = new UpdateUserDTO
+            {
+                UserId = dto.Id,
+                UserName = "asddd",
+                Email = "new@email.com"
+            };
+
+            var updateResponse = await client.PutAsJsonAsync($"/api/users/update", updateDTO);
+
+            Assert.Equal(HttpStatusCode.OK, updateResponse.StatusCode);
+
+            var updatedData = await updateResponse.Content.ReadFromJsonAsync<UserDTO>();
+            Assert.NotNull(updatedData);
+            Assert.Equal("asddd", updatedData!.Username);
+            Assert.Equal("new@email.com", updatedData!.Email);
         }
     }
 }
