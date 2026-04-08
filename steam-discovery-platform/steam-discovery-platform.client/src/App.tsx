@@ -7,6 +7,7 @@ import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import { AuthProvider } from './context/AuthContext';
 import UserProfile from "./pages/UserProfile";
+import UserLibrary from "./pages/UserLibrary";
 
 function App() {
     return (
@@ -18,6 +19,7 @@ function App() {
                     <Route path="/recommendations/:gameName" element={<RecommendationPage />} />
                         <Route path="/gameInfo/:id" element={<GameDetailsPage />} />
                         <Route path="/me" element={<UserProfile />} />
+                        <Route path="/library" element={<UserLibrary />} />
 
                 </Route>
                     <Route path="/login" element={<LoginPage />} />
