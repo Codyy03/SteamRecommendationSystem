@@ -49,6 +49,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddScoped<JwtTokenHelper>();
 
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
+builder.Services.AddScoped<IUserLibraryService, UserLibraryService>();
 builder.Services.AddHttpClient<IPythonRecommendationService, PythonRecommendationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
