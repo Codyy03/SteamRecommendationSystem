@@ -1,11 +1,12 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using steam_discovery_platform.Server.Helpers;
 using steam_discovery_platform.Server.Interfaces;
+using steam_discovery_platform.Server.Middleware;
 using steam_discovery_platform.Server.Models;
 using steam_discovery_platform.Server.Services;
 using System.IdentityModel.Tokens.Jwt;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,12 +45,15 @@ builder.Services.AddCors(options =>
                           .AllowCredentials());
 });
 
+
 builder.Services.AddScoped<JwtTokenHelper>();
 
 builder.Services.AddScoped<IApplicationService, ApplicationService>();
 builder.Services.AddHttpClient<IPythonRecommendationService, PythonRecommendationService>();
 builder.Services.AddScoped<IUserService, UserService>();
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();

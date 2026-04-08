@@ -25,6 +25,18 @@ namespace steam_discovery_platform.Server.Services
 
         public async Task<User> CreateUser(UserRegisterDTO userRegisterDTO)
         {
+            var nameErrors = dataValidation.ValidateName(userRegisterDTO.userName);
+            if (nameErrors.Any())
+                throw new ValidationException(string.Join(" ", nameErrors));
+
+            var emailErrors = dataValidation.ValidateEmail(userRegisterDTO.Email);
+            if (emailErrors.Any())
+                throw new ValidationException(string.Join(" ", emailErrors));
+
+            var passwordErrors = dataValidation.ValidatePassword(userRegisterDTO.Password);
+            if (passwordErrors.Any())
+                throw new ValidationException(string.Join(" ", passwordErrors));
+
             if (await context.Users.AnyAsync(u => u.Username == userRegisterDTO.userName))
                 throw new ValidationException("User name must be unique");
 

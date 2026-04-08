@@ -11,7 +11,7 @@ namespace steam_discovery_platform.Server.Validation
             var errors = new List<string>();
 
             if (string.IsNullOrWhiteSpace(password) || password.Length < 6)
-                errors.Add("Password must be at least 8 characters long.");
+                errors.Add("Password must be at least 6 characters long.");
 
             return errors;
         }

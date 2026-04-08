@@ -18,19 +18,21 @@ function LoginPage() {
                 userName,
                 password
             });
+
             const { accessToken, refreshToken } = res.data;
 
             if (accessToken && refreshToken) {
                 login(accessToken, refreshToken);
                 navigate("/");
-            } else {
-                setError("Invalid email or password");
             }
         } catch (err) {
             if (axios.isAxiosError(err)) {
-                const message = err.response?.data;
-                if (typeof message === "string") {
-                    setError(message);
+                const serverMessage = err.response?.data?.message || err.response?.data;
+
+                if (typeof serverMessage === "string") {
+                    setError(serverMessage);
+                } else {
+                    setError("Invalid login credentials.");
                 }
             } else {
                 setError("Unexpected error occurred.");
@@ -76,7 +78,13 @@ function LoginPage() {
                             </div>
 
                             <form onSubmit={handleSubmit}>
-                                {error && <div className="alert alert-danger py-2">{error}</div>}
+                                {error && (
+                                    <div className="alert alert-danger py-2 d-flex align-items-center shadow-sm"
+                                        style={{ borderLeft: '4px solid #dc3545', fontSize: '0.9rem' }}>
+                                        <i className="bi bi-exclamation-circle-fill me-2"></i>
+                                        {error}
+                                    </div>
+                                )}
                                 {/* Input: Email / Username */}
                                 <div className="mb-3">
                                     <label className="form-label small text-light uppercase">Account Name</label>

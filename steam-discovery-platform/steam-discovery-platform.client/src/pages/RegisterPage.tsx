@@ -37,7 +37,7 @@ function RegisterPage() {
     };
 
     const validate = (): boolean => {
-        let newErrors: RegisterErrors = {};
+        const newErrors: RegisterErrors = {};
 
         if (formData.username.length < 3) {
             newErrors.username = "Username must be at least 3 characters.";
@@ -64,22 +64,30 @@ function RegisterPage() {
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (validate()) {
-            console.log("Valid data:", formData);
+        if (!validate()) {
+            return;
         }
 
-        const response = await fetch("https://localhost:7179/api/users/register", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        });
+        try {
+            const response = await fetch("https://localhost:7179/api/users/register", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: formData.username,
+                    email: formData.email,
+                    password: formData.password
+                }),
+            });
 
-        if (response.ok) {
-            navigate("/login");
-            alert("success");
-        } else {
-            const errorMsg = await response.text();
-            alert("Error" + errorMsg);
+            if (response.ok) {
+                navigate("/login");
+            } else {
+                const errorData = await response.json();
+                setErrors(prev => ({ ...prev, server: errorData.message }));
+            }
+        } catch (err) {
+            console.error("Network error:", err);
+            setErrors(prev => ({ ...prev, server: "Connection error. Please try again later." }));
         }
     };
 
