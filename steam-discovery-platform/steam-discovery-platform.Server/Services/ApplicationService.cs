@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using steam_discovery_platform.Server.DTOs;
+using steam_discovery_platform.Server.Helpers;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
 
@@ -12,10 +13,12 @@ namespace steam_discovery_platform.Server.Services
     public class ApplicationService : IApplicationService
     {
         readonly SteamdbContext context;
-        
-        public ApplicationService(SteamdbContext context)
+        readonly JwtTokenHelper jwtHelper;
+
+        public ApplicationService(SteamdbContext context, JwtTokenHelper jwtHelper)
         {
             this.context = context;
+            this.jwtHelper = jwtHelper;
         }
 
         /// <summary>
@@ -23,8 +26,10 @@ namespace steam_discovery_platform.Server.Services
         /// </summary>
         /// <param name="id">The unique Steam Application ID (Appid).</param>
         /// <returns>A DTO containing comprehensive game details, or null if not found.</returns>
-        public async Task<GameDetailsDTO> GetGameDetails(int id)
+        public async Task<GameDetailsDTO> GetGameDetails(int id, Guid userId)
         {
+            bool isInLibrary = false;
+
             GameDetailsDTO? gameDetailsDTO = await context.Applications
                 .Include(a => a.Developers)
                 .Include(a => a.Categories)
@@ -53,10 +58,18 @@ namespace steam_discovery_platform.Server.Services
                     Developers = string.Join(", ", a.Developers.Select(d => d.Name)),
                     Publishers = string.Join(", ", a.Publishers.Select(p => p.Name)),
                     Categories = string.Join(", ", a.Categories.Select(c => c.Name)),
-                    Genres = string.Join(", ", a.Genres.Select(g => g.Name))
+                    Genres = string.Join(", ", a.Genres.Select(g => g.Name)),
                 }).FirstOrDefaultAsync();
 
-            return gameDetailsDTO!;
+            if (gameDetailsDTO == null) return null!;
+
+            if (userId != Guid.Empty)
+            {
+                gameDetailsDTO.IsInLibrary = await context.UserLibraries
+                    .AnyAsync(u => u.UserId == userId && u.Appid == id);
+            }
+
+            return gameDetailsDTO;
         }
 
         /// <summary>

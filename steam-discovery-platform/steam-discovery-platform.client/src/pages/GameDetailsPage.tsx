@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getGameDetails } from '../services/applicationsService';
+import api from '../services/api';
 function GameDetailsPage() {
     interface GameDetailsDTO {
         appid: number;
@@ -16,13 +17,14 @@ function GameDetailsPage() {
         currency: string;
         supportsWindows: boolean;
         supportsMac: boolean;
-        supportsLinux: boolean;
+        supportsLinux: boolean; 
         pcRequirements: string;
         createdAt: Date;
         developers: string;
         publishers: string;
         categories: string;
         genres: string;
+        isInLibrary: boolean;
     }
 
     interface UserGameDTO {
@@ -37,26 +39,24 @@ function GameDetailsPage() {
     const { id } = useParams<{ id: string }>();
 
     const handleSubmit = async () => {
-        const hardcodedData: UserGameDTO = {
+        const payload: UserGameDTO = {
             appid: Number(id)
         };
 
-        const token = localStorage.getItem("token");
-
         try {
-            await fetch("https://localhost:7179/api/userLibrary/addGameToLibrary", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(hardcodedData),
-            });
+            setLoading(true);
+
+            await api.post("/api/userLibrary/addGameToLibrary", payload);
+
+            setGameDetails(prev => prev ? { ...prev, isInLibrary: true } : null);
+
             alert("Added to library!");
-        } catch (err) {
-            console.error("Network error:", err);
+        } finally {
+            setLoading(false);
         }
-    }
+    };
+
+       
 
     useEffect(() => {
         if (!id) return;
@@ -196,9 +196,13 @@ function GameDetailsPage() {
                                             {gameDetails.isFree ? 'FREE' : `${(gameDetails.finalPrice / 100).toFixed(2)} ${gameDetails.currency}`}
                                         </span>
                                     </div>
-                                    <button className="btn btn-danger w-100 fw-bold py-2 shadow-sm border-0 mb-2"
-                                        onClick={token != null ? () => handleSubmit() : () => navigation("/login")}>
-                                        ADD TO FAVORITE
+                                    <button
+                                        className={`btn w-100 fw-bold py-2 shadow-sm border-0 mb-2 ${gameDetails.isInLibrary ? 'btn-secondary' : 'btn-danger'
+                                            }`}
+                                        onClick={token != null ? () => handleSubmit() : () => navigation("/login")}
+                                        disabled={gameDetails.isInLibrary || loading}
+                                    >
+                                        {loading ? "Adding..." : (gameDetails.isInLibrary ? "IN LIBRARY" : "ADD TO FAVORITE")}
                                     </button>
                                 </div>
 

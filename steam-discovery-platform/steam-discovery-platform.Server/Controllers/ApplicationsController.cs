@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
+using System.Security.Claims;
 
 namespace steam_discovery_platform.Server.Controllers
 {
@@ -53,7 +54,11 @@ namespace steam_discovery_platform.Server.Controllers
         [HttpGet("getGameDetails")]
         public async Task<ActionResult<GameDetailsDTO>> GetGameDetails(int id)
         {
-            var gameDetails = await appService.GetGameDetails(id);
+            var userIdClaim = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            Guid userId = string.IsNullOrEmpty(userIdClaim) ? Guid.Empty : Guid.Parse(userIdClaim);
+
+            var gameDetails = await appService.GetGameDetails(id, userId);
 
             return gameDetails == null ? NotFound() : Ok(gameDetails);
         }

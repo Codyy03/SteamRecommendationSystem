@@ -1,4 +1,5 @@
-﻿using steam_discovery_platform.Server.DTOs;
+﻿using Microsoft.EntityFrameworkCore;
+using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Helpers;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;

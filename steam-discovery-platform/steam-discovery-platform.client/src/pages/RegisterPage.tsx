@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import api from '../services/api';
 
 function RegisterPage() {
 
@@ -31,8 +33,8 @@ function RegisterPage() {
         const { name, value } = e.target;
         setFormData(prev => ({ ...prev, [name]: value }));
 
-        if (errors[name]) {
-            setErrors(prev => ({ ...prev, [name]: '' }));
+        if (errors[name] || errors.server) {
+            setErrors(prev => ({ ...prev, [name]: '', server: '' }));
         }
     };
 
@@ -61,33 +63,39 @@ function RegisterPage() {
     };
 
     const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if (!validate()) {
-            return;
-        }
+        if (!validate()) return;
 
         try {
-            const response = await fetch("https://localhost:7179/api/users/register", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    username: formData.username,
-                    email: formData.email,
-                    password: formData.password
-                }),
-            });
+            setLoading(true);
+            setErrors({});
 
-            if (response.ok) {
-                navigate("/login");
-            } else {
-                const errorData = await response.json();
-                setErrors(prev => ({ ...prev, server: errorData.message }));
+            const registerPayload = { ...formData };
+            delete (registerPayload as any).confirmPassword;
+
+            await api.post("/api/users/register", registerPayload);
+            navigate("/login");
+        } catch (err: any) {
+            const data = err.response?.data;
+
+            let message = "Registration failed.";
+
+            if (typeof data === 'string') {
+                message = data;
+            } else if (data?.message) {
+                message = data.message;
+            } else if (data?.errors) {
+                // Jeœli backend zwraca b³êdy w formacie ModelState (obiekt z tablicami)
+                message = Object.values(data.errors).flat().join(" ");
             }
-        } catch (err) {
-            console.error("Network error:", err);
-            setErrors(prev => ({ ...prev, server: "Connection error. Please try again later." }));
+
+            setErrors(prev => ({ ...prev, server: message }));
+            console.error("Backend error formatted:", message);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -208,10 +216,22 @@ function RegisterPage() {
                                     {errors.confirmPassword && <div className="text-danger small mt-1">{errors.confirmPassword}</div>}
                                 </div>
 
+                                {errors.server && (
+                                    <div className="alert alert-danger d-flex align-items-center border-0 mb-3"
+                                        style={{ backgroundColor: 'rgba(220, 53, 69, 0.2)', color: '#ff6b6b' }}>
+                                        <i className="bi bi-exclamation-triangle-fill me-2"></i>
+                                        <small>{errors.server}</small>
+                                    </div>
+                                )}
+
                                 {/* register button */}
-                                <button className="btn btn-danger w-100 py-2 fw-bold mb-3 shadow-sm border-0"
+                                <button
+                                    disabled={loading}
+                                    className="btn btn-danger w-100 py-2 fw-bold mb-3 shadow-sm border-0"
                                     style={{ background: 'linear-gradient(to right, #e44d26, #f16529)' }}>
-                                    Create My Account
+                                    {loading ? (
+                                        <span className="spinner-border spinner-border-sm me-2"></span>
+                                    ) : "Create My Account"}
                                 </button>
                             </form>
 

@@ -17,7 +17,7 @@ namespace steam_discovery_platform.Server.Controllers
             this.userLibraryService = userLibraryService;
         }
 
-        [Authorize] // <--- To sprawi, że zapytanie bez tokena dostanie 401 Unauthorized
+        [Authorize]
         [HttpPost("addGameToLibrary")]
         public async Task<IActionResult> AddGameToUserLibrary([FromBody] UserGameDTO userGameDTO)
         {

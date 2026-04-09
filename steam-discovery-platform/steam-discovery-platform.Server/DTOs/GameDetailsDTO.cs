@@ -36,5 +36,6 @@
         public string? Publishers { get; set; }
         public string? Categories { get; set; }
         public string? Genres { get; set; }
+        public bool IsInLibrary { get; set; }
     }
 }

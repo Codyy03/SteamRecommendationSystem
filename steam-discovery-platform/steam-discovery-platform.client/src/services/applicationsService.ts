@@ -1,3 +1,5 @@
+import api from "./api";
+
 export async function getGames() {
     const response = await fetch("https://localhost:7179/api/applications/getGames");
 
@@ -15,9 +17,6 @@ export async function getGamesByGenre(genre: string) {
 }
 
 export async function getGameDetails(id: number) {
-    const response = await fetch(`https://localhost:7179/api/applications/getGameDetails?id=${id}`);
-
-    if (!response.ok) throw new Error("Error when downloading games");
-
-    return response.json();
+    const res = await api.get(`/api/applications/getGameDetails?id=${id}`);
+    return res.data;
 }
