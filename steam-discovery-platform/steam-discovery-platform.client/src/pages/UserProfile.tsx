@@ -73,7 +73,6 @@ function UserProfile() {
                             {!isEditing ? (
                                 <>
                                     <h2 className="fw-bold mb-1" style={{ color: '#fff' }}>{userData?.username}</h2>
-                                    <span className="badge bg-danger text-light mb-4">{userData?.role}</span>
                                 </>
                             ) : (
                                 <div className="mb-4">

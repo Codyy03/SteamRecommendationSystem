@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams} from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { getGameDetails } from '../services/applicationsService';
 function GameDetailsPage() {
     interface GameDetailsDTO {
@@ -25,9 +25,38 @@ function GameDetailsPage() {
         genres: string;
     }
 
+    interface UserGameDTO {
+        appid: number;
+    }
+
+    const token = localStorage.getItem("token");
+    const navigation = useNavigate();
+
     const [gameDetails, setGameDetails] = useState<GameDetailsDTO | null>();
     const [loading, setLoading] = useState(true);
     const { id } = useParams<{ id: string }>();
+
+    const handleSubmit = async () => {
+        const hardcodedData: UserGameDTO = {
+            appid: Number(id)
+        };
+
+        const token = localStorage.getItem("token");
+
+        try {
+            await fetch("https://localhost:7179/api/userLibrary/addGameToLibrary", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`
+                },
+                body: JSON.stringify(hardcodedData),
+            });
+            alert("Added to library!");
+        } catch (err) {
+            console.error("Network error:", err);
+        }
+    }
 
     useEffect(() => {
         if (!id) return;
@@ -167,7 +196,8 @@ function GameDetailsPage() {
                                             {gameDetails.isFree ? 'FREE' : `${(gameDetails.finalPrice / 100).toFixed(2)} ${gameDetails.currency}`}
                                         </span>
                                     </div>
-                                    <button className="btn btn-danger w-100 fw-bold py-2 shadow-sm border-0 mb-2">
+                                    <button className="btn btn-danger w-100 fw-bold py-2 shadow-sm border-0 mb-2"
+                                        onClick={token != null ? () => handleSubmit() : () => navigation("/login")}>
                                         ADD TO FAVORITE
                                     </button>
                                 </div>

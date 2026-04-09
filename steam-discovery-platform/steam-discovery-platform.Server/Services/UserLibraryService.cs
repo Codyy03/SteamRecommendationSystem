@@ -16,12 +16,12 @@ namespace steam_discovery_platform.Server.Services
             this.jwtHelper = jwtHelper;
         }
 
-        public async Task<UserLibrary> AddGameToLibrary(UserGameDTO userGameDTO)
+        public async Task<UserLibrary> AddGameToLibrary(Guid userID, UserGameDTO userGameDTO)
         {
             UserLibrary gameDTO = new UserLibrary
             {
-                UserId = userGameDTO.userID,
-                Appid = userGameDTO.appid,
+                UserId = userID,
+                Appid = userGameDTO.Appid,
                 IsFavorite = false,
                 AddedAt = DateTime.UtcNow,
             };

@@ -49,8 +49,8 @@ const Navbar: React.FC = () => {
                             </Link>
                         </li>
                         <li>
-                            <Link className="dropdown-item py-2" to="/favorites">
-                                <i className="bi bi-heart me-2"></i> Favorites
+                            <Link className="dropdown-item py-2" to="/library">
+                                <i className="bi bi-heart me-2"></i> Library
                             </Link>
                         </li>
                         <li><hr className="dropdown-divider border-secondary opacity-25" /></li>

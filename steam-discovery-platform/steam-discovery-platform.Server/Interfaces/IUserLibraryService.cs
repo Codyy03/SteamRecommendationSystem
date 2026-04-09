@@ -5,6 +5,6 @@ namespace steam_discovery_platform.Server.Interfaces
 {
     public interface IUserLibraryService
     {
-        public Task<UserLibrary> AddGameToLibrary(UserGameDTO userGameDTO);
+        public Task<UserLibrary> AddGameToLibrary(Guid userId, UserGameDTO userGameDTO);
     }
 }

@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Interfaces;
+using System.Security.Claims;
 
 namespace steam_discovery_platform.Server.Controllers
 {
@@ -15,12 +17,24 @@ namespace steam_discovery_platform.Server.Controllers
             this.userLibraryService = userLibraryService;
         }
 
+        [Authorize] // <--- To sprawi, że zapytanie bez tokena dostanie 401 Unauthorized
         [HttpPost("addGameToLibrary")]
-        public async Task<NoContentResult> AddGameToUserLibrary([FromBody] UserGameDTO userGameDTO)
+        public async Task<IActionResult> AddGameToUserLibrary([FromBody] UserGameDTO userGameDTO)
         {
-            var newUser = await userLibraryService.AddGameToLibrary(userGameDTO);
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            return NoContent();
+            if (string.IsNullOrEmpty(userIdString))
+            {
+                return Unauthorized("User ID not found in token.");
+            }
+
+            if (Guid.TryParse(userIdString, out Guid userId))
+            {
+                await userLibraryService.AddGameToLibrary(userId, userGameDTO);
+                return NoContent();
+            }
+
+            return BadRequest("Invalid User ID format in token.");
         }
     }
 }

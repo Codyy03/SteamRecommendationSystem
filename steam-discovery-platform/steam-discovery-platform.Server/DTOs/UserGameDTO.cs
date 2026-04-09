@@ -2,7 +2,6 @@
 {
     public class UserGameDTO
     {
-        public Guid userID { get; set; }
-        public int appid { get; set; }
+        public int Appid { get; set; }
     }
 }
