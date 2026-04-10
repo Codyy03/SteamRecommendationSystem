@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { getUserLibrary } from '../services/userLibraryService';
 import { useNavigate } from 'react-router-dom'
+import api from '../services/api';
 function UserLibrary() {
     interface GameInfo {
         appid: number;
@@ -73,6 +74,29 @@ function UserLibrary() {
             if (sortBy === 'az') return a.game.name.localeCompare(b.game.name);
             return 0;
         });
+
+
+    const handleGetRecommendations = async () => {
+        // displayedGames ju¿ uwzglêdnia wyszukiwarkê, zak³adkê ulubione i gatunek!
+        const gameIdsToSend = displayedGames.map(item => item.game.appid);
+
+        if (gameIdsToSend.length === 0) {
+            alert("No games to base recommendations on. Change your filters!");
+            return;
+        }
+
+        // Wyœlij gameIdsToSend do Pythona
+    }
+
+    const handleRemoveGame = async (appid: number) => {
+        try {
+            await api.delete(`/api/usersLibrary/delete/${appid}`);
+
+            setGames(prevGames => prevGames.filter(item => item.game.appid !== appid));
+        } catch (error) {
+            console.error("Failed to remove game:", error);
+        }
+    }
 
     if (loading) return (
         <div className="container-fluid py-5 min-vh-100 bg-dark d-flex justify-content-center align-items-center">
@@ -182,7 +206,8 @@ function UserLibrary() {
                                 style={{ backgroundColor: '#1b2838', borderRadius: '10px', overflow: 'hidden' }}>
 
                                 {/* Favorite Icon */}
-                                <button className="btn btn-link position-absolute top-0 end-0 p-2 border-0" style={{ zIndex: 2 }}>
+                                <button className="btn btn-link position-absolute top-0 end-0 p-2 border-0" style={{ zIndex: 2 }}
+                                    onClick={() => handleGetRecommendations()}>
                                     <i className={`bi ${item.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white'} fs-5`}></i>
                                 </button>
 
@@ -211,10 +236,19 @@ function UserLibrary() {
                                     <h5 className="card-title fw-bold mb-3 text-truncate" title={item.game.name}>
                                         {item.game.name}
                                     </h5>
-                                    <button className="btn btn-outline-danger btn-sm mt-auto fw-bold"
-                                        onClick={() => navigateToGameDetails(item.game.appid)}>
-                                        View Details
-                                    </button>
+                                    <div className="mt-auto d-flex gap-2">
+                                        <button
+                                            className="btn btn-outline-danger btn-sm flex-grow-1 fw-bold"
+                                            onClick={() => navigateToGameDetails(item.game.appid)}>
+                                            View Details
+                                        </button>
+                                        <button
+                                            className="btn btn-outline-secondary btn-sm px-3"
+                                            title="Remove from library"
+                                         onClick={() => handleRemoveGame(item.game.appid)}>
+                                            <i className="bi bi-trash3"></i>
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>

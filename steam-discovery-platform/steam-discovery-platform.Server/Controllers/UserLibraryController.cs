@@ -46,5 +46,15 @@ namespace steam_discovery_platform.Server.Controllers
             var library = await userLibraryService.GetUserLibraryGames(Guid.Parse(userIdString));
             return library;
         }
+
+        [HttpDelete("/api/usersLibrary/delete/{appid}")]
+        public async Task<IActionResult> RemoveGameFromLibrary([FromRoute] int appid)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
+
+            await userLibraryService.RemoveGameFromLibrary(appid, Guid.Parse(userIdString));
+            return NoContent();
+        }
     }
 }

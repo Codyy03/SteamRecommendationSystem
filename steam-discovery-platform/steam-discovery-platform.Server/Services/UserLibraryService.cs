@@ -55,5 +55,17 @@ namespace steam_discovery_platform.Server.Services
                           })
                     .ToListAsync();
         }
+
+        public async Task RemoveGameFromLibrary(int appid, Guid userId)
+        {
+            var gameInLibrary = await context.UserLibraries
+                .Where(ul => ul.UserId == userId && ul.Appid == appid)
+                .FirstOrDefaultAsync();
+
+            if (gameInLibrary == null) return;
+
+            context.Remove(gameInLibrary);
+            await context.SaveChangesAsync();
+        }
     }
 }
