@@ -76,7 +76,7 @@ function UserProfile() {
                                 </>
                             ) : (
                                 <div className="mb-4">
-                                    <h4 className="text-danger">Editing Profile</h4>
+                                    <h4 className="text-light">Editing Profile</h4>
                                 </div>
                             )}
 

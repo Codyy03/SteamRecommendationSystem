@@ -49,14 +49,10 @@ function GameDetailsPage() {
             await api.post("/api/userLibrary/addGameToLibrary", payload);
 
             setGameDetails(prev => prev ? { ...prev, isInLibrary: true } : null);
-
-            alert("Added to library!");
         } finally {
             setLoading(false);
         }
     };
-
-       
 
     useEffect(() => {
         if (!id) return;

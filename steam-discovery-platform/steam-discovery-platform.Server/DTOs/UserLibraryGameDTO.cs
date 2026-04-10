@@ -2,9 +2,8 @@
 {
     public class UserLibraryGameDTO
     {
-        public Guid UserID { get; set; }
-        public int Appid { get; set; }
-        public bool IsFavorite {  get; set; }
-        public DateTime AddedAt { get; set; }
+        public bool? IsFavorite {  get; set; }
+        public DateTime? AddedAt { get; set; }
+        public GameInfoDTO Game { get; set; }
     }
 }

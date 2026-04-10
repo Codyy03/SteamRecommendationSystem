@@ -36,5 +36,15 @@ namespace steam_discovery_platform.Server.Controllers
 
             return BadRequest("Invalid User ID format in token.");
         }
+
+        [Authorize]
+        [HttpGet("userLibrary")]
+        public async Task<ActionResult<List<UserLibraryGameDTO>>> GetUserLibraryGames()
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var library = await userLibraryService.GetUserLibraryGames(Guid.Parse(userIdString));
+            return library;
+        }
     }
 }

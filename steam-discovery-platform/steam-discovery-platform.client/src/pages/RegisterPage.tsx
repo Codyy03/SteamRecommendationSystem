@@ -88,7 +88,7 @@ function RegisterPage() {
             } else if (data?.message) {
                 message = data.message;
             } else if (data?.errors) {
-                // Jeœli backend zwraca b³êdy w formacie ModelState (obiekt z tablicami)
+                // JeÅ›li backend zwraca bÅ‚Ä™dy w formacie ModelState (obiekt z tablicami)
                 message = Object.values(data.errors).flat().join(" ");
             }
 
