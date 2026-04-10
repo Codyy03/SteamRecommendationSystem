@@ -5,5 +5,6 @@
         public bool? IsFavorite {  get; set; }
         public DateTime? AddedAt { get; set; }
         public GameInfoDTO Game { get; set; }
+        public string? Genres { get; set; }
     }
 }

@@ -36,23 +36,24 @@ namespace steam_discovery_platform.Server.Services
         public async Task<List<UserLibraryGameDTO>> GetUserLibraryGames(Guid userId)
         {
             return await context.UserLibraries
-             .Where(ul => ul.UserId == userId)
-             .Join(context.Applications,
-                   ul => ul.Appid,
-                   app => app.Appid,
-                   (ul, app) => new UserLibraryGameDTO
-                   {
-                       IsFavorite = ul.IsFavorite,
-                       AddedAt = ul.AddedAt,
-                       Game = new GameInfoDTO 
-                       {
-                           Appid = app.Appid,
-                           Name = app.Name,
-                           Type = app.Type,
-                           HeaderImage = app.HeaderImage
-                       }
-                   })
-             .ToListAsync();
+                    .Where(ul => ul.UserId == userId)
+                    .Join(context.Applications,
+                          ul => ul.Appid,
+                          app => app.Appid,
+                          (ul, app) => new UserLibraryGameDTO
+                          {
+                              IsFavorite = ul.IsFavorite,
+                              AddedAt = ul.AddedAt,
+                              Game = new GameInfoDTO
+                              {
+                                  Appid = app.Appid,
+                                  Name = app.Name,
+                                  Type = app.Type,
+                                  HeaderImage = app.HeaderImage
+                              },
+                              Genres = string.Join(", ", app.Genres.Select(g => g.Name))
+                          })
+                    .ToListAsync();
         }
     }
 }
