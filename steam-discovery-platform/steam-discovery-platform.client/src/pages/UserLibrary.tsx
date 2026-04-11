@@ -52,11 +52,11 @@ function UserLibrary() {
         const genresSet = new Set<string>();
         games.forEach(item => {
             if (item.genres) {
-                // Rozdzielamy string "Action, RPG" na pojedyncze s≥owa i usuwamy spacje
+                // Rozdzielamy string "Action, RPG" na pojedyncze s≈Çowa i usuwamy spacje
                 item.genres.split(',').forEach((g: string) => genresSet.add(g.trim()));
             }
         });
-        // Zwracamy posortowanπ alfabetycznie tablicÍ gatunkÛw
+        // Zwracamy posortowanƒÖ alfabetycznie tablicƒô gatunk√≥w
         return Array.from(genresSet).sort();
     }, [games]);
 
@@ -106,7 +106,7 @@ function UserLibrary() {
     return (
         <div className="container-fluid py-5 min-vh-100  main-bg-gradient" >
             <div className="container">
-                {/* NAG£”WEK I REKOMENDACJE */}
+                {/* NAG≈Å√ìWEK I REKOMENDACJE */}
                 <div className="d-flex justify-content-between align-items-center mb-4">
                     <div>
                         <h2 className="fw-bold mb-0 text-white">
@@ -179,7 +179,7 @@ function UserLibrary() {
                         </div>
                     </div>
 
-                    {/* 4. Zak≥adki (All/Favorites) */}
+                    {/* 4. Zak≈Çadki (All/Favorites) */}
                     <div className="col-12 col-md-6 col-lg-3 d-flex justify-content-md-end align-items-center">
                         <div className="btn-group w-100">
                             <button

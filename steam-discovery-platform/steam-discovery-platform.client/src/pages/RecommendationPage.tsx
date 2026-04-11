@@ -48,7 +48,7 @@ function RecommendationPage() {
                     w.meta,
                     w.pop,
                     w.howManyGames
-                    // Jeúli doda≥eú tu series_penalty w C#, dopisz je teø tutaj!
+                    // Je≈õli doda≈Çe≈õ tu series_penalty w C#, dopisz je te≈º tutaj!
                 );
             } else {
                 data = await getPythonRecomentationGamesByName(
@@ -84,7 +84,7 @@ function RecommendationPage() {
         window.scrollTo(0, 0);
 
         let queryToSearch = "";
-        let isLibraryMode = false; // Domyúlnie false
+        let isLibraryMode = false; // Domy≈õlnie false
 
         if (gameName && gameName !== 'library') {
             queryToSearch = gameName;
@@ -102,11 +102,11 @@ function RecommendationPage() {
             setIsUpdating(true);
         }
 
-        // Odpalamy z nowπ flagπ
+        // Odpalamy z nowƒÖ flagƒÖ
         debouncedFetch(queryToSearch, weights, isLibraryMode);
 
         return () => debouncedFetch.cancel();
-    }, [gameName, gamesListFromLibrary, weights, debouncedFetch]); // Zaleønoúci zostajπ te same
+    }, [gameName, gamesListFromLibrary, weights, debouncedFetch]); // Zale≈ºno≈õci zostajƒÖ te same
 
     const [innerSearch, setInnerSearch] = useState("");
     const [sortType, setSortType] = useState("relevance");
@@ -135,7 +135,7 @@ function RecommendationPage() {
     }
 
     const getHeaderContent = () => {
-        // 1. Sprawdü czy mamy dane ze 'state' (czyli z biblioteki)
+        // 1. Sprawd≈∫ czy mamy dane ze 'state' (czyli z biblioteki)
         if (location.state?.gamesList) {
             return (
                 <h2 className="fw-bold">
@@ -144,7 +144,7 @@ function RecommendationPage() {
             );
         }
 
-        // 2. Obs≥uga Cold Start (jeúli jedna gra nie zosta≥a znaleziona)
+        // 2. Obs≈Çuga Cold Start (je≈õli jedna gra nie zosta≈Ça znaleziona)
         if (pythonInfo?.is_cold_start) {
             return (
                 <h3 className="text-danger">
