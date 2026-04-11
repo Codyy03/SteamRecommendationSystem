@@ -40,7 +40,6 @@ function RecommendationPage() {
         try {
             let data;
 
-            // Wybieramy odpowiedni serwis na podstawie trybu
             if (isLibraryMode) {
                 data = await getPythonUserRecomentationGamesByName(
                     name,
@@ -48,7 +47,6 @@ function RecommendationPage() {
                     w.meta,
                     w.pop,
                     w.howManyGames
-                    // Jeśli dodałeś tu series_penalty w C#, dopisz je też tutaj!
                 );
             } else {
                 data = await getPythonRecomentationGamesByName(
@@ -73,7 +71,6 @@ function RecommendationPage() {
     };
 
     const debouncedFetch = useMemo(
-        // Przekazujemy isLibraryMode dalej
         () => debounce((name: string, w: typeof weights, isLibraryMode: boolean) => {
             fetchGames(name, w, isLibraryMode);
         }, 500),
@@ -84,14 +81,14 @@ function RecommendationPage() {
         window.scrollTo(0, 0);
 
         let queryToSearch = "";
-        let isLibraryMode = false; // Domyślnie false
+        let isLibraryMode = false; 
 
         if (gameName && gameName !== 'library') {
             queryToSearch = gameName;
-            isLibraryMode = false; // Szukamy pojedynczej gry
+            isLibraryMode = false; // only sigle game
         } else if (gamesListFromLibrary) {
             queryToSearch = gamesListFromLibrary;
-            isLibraryMode = true;  // Szukamy po bibliotece!
+            isLibraryMode = true;  // look in library
         } else {
             return;
         }
@@ -102,11 +99,10 @@ function RecommendationPage() {
             setIsUpdating(true);
         }
 
-        // Odpalamy z nową flagą
         debouncedFetch(queryToSearch, weights, isLibraryMode);
 
         return () => debouncedFetch.cancel();
-    }, [gameName, gamesListFromLibrary, weights, debouncedFetch]); // Zależności zostają te same
+    }, [gameName, gamesListFromLibrary, weights, debouncedFetch]);
 
     const [innerSearch, setInnerSearch] = useState("");
     const [sortType, setSortType] = useState("relevance");
@@ -135,7 +131,7 @@ function RecommendationPage() {
     }
 
     const getHeaderContent = () => {
-        // 1. Sprawdź czy mamy dane ze 'state' (czyli z biblioteki)
+        // 1. Check if we have data from 'state' (i.e. from the library)
         if (location.state?.gamesList) {
             return (
                 <h2 className="fw-bold">
@@ -144,7 +140,7 @@ function RecommendationPage() {
             );
         }
 
-        // 2. Obsługa Cold Start (jeśli jedna gra nie została znaleziona)
+        // 2. Cold Start Support (if one game not found)
         if (pythonInfo?.is_cold_start) {
             return (
                 <h3 className="text-danger">
@@ -153,7 +149,7 @@ function RecommendationPage() {
             );
         }
 
-        // 3. Standardowa jedna gra
+        // 3. Standard one game
         return (
             <h2 className="fw-bold">
                 Recommended for: <span className="text-danger">{pythonInfo?.base_game}</span>

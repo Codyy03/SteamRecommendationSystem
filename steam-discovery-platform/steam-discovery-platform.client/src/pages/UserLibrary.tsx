@@ -46,17 +46,15 @@ function UserLibrary() {
 
     const [searchTerm, setSearchTerm] = useState('');
     const [sortBy, setSortBy] = useState('newest');
-    const [selectedGenre, setSelectedGenre] = useState('all'); // NOWY STAN
+    const [selectedGenre, setSelectedGenre] = useState('all');
 
     const availableGenres = useMemo(() => {
         const genresSet = new Set<string>();
         games.forEach(item => {
             if (item.genres) {
-                // Rozdzielamy string "Action, RPG" na pojedyncze słowa i usuwamy spacje
                 item.genres.split(',').forEach((g: string) => genresSet.add(g.trim()));
             }
         });
-        // Zwracamy posortowaną alfabetycznie tablicę gatunków
         return Array.from(genresSet).sort();
     }, [games]);
 
@@ -106,27 +104,44 @@ function UserLibrary() {
     return (
         <div className="container-fluid py-5 min-vh-100  main-bg-gradient" >
             <div className="container">
-                {/* NAGŁÓWEK I REKOMENDACJE */}
-                <div className="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h2 className="fw-bold mb-0 text-white">
-                            <i className="bi bi-collection-play me-2"></i>My Library
-                        </h2>
-                        <span className="text-secondary small">{games.length} games in total</span>
-                    </div>
+                {/* header recommendations */}
+                <div className="container">
+                    <div className="d-flex justify-content-between align-items-center mb-4">
+                        <div>
+                            <h2 className="fw-bold mb-0 text-white">
+                                <i className="bi bi-collection-play me-2"></i>My Library
+                            </h2>
+                            <div className="d-flex align-items-center gap-2 py-1">
+                                <span className="text-secondary small">{games.length} games in total</span>
+                                {/* info about filtrs*/}
+                                {displayedGames.length < games.length && (
+                                    <span className="badge rounded-pill bg-secondary text-dark small">
+                                        <i className="bi bi-filter me-1"></i>
+                                        Filtering active: {displayedGames.length} games selected
+                                    </span>
+                                )}
+                            </div>
+                        </div>
 
-                    {/* PRZYCISK REKOMENDACJI (Python API) */}
-                    <button className="btn btn-outline-info d-flex align-items-center gap-2 shadow-sm fw-bold"
-                        onClick={() => handleGetRecommendations() }>
-                        <i className="bi bi-magic"></i>
-                        <span>Get AI Recommendations</span>
-                    </button>
+                        <div className="text-end">
+                            <button className="btn btn-outline-info d-flex align-items-center gap-2 shadow-sm fw-bold mb-1"
+                                onClick={() => handleGetRecommendations()}>
+                                <i className="bi bi-magic"></i>
+                                <span>Get AI Recommendations</span>
+                            </button>
+                            {/* for users */}
+                            <div className="text-info" style={{ fontSize: '0.75rem', opacity: 0.8 }}>
+                                <i className="bi bi-info-circle me-1"></i>
+                                Based on {displayedGames.length} games currently visible
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                {/* TOOLBAR Z FILTRAMI */}
+                {/* TOOLBAR with filters*/}
                 <div className="row g-3 mb-4 bg-dark p-3 rounded-3 shadow-sm border border-secondary">
 
-                    {/* 1. Wyszukiwarka */}
+                    {/* 1. search */}
                     <div className="col-12 col-md-6 col-lg-3">
                         <div className="input-group">
                             <span className="input-group-text bg-black border-secondary text-secondary">
@@ -142,7 +157,7 @@ function UserLibrary() {
                         </div>
                     </div>
 
-                    {/* 2. Filtrowanie po Gatunku */}
+                    {/* 2. filters for genre */}
                     <div className="col-12 col-md-6 col-lg-3">
                         <div className="input-group">
                             <span className="input-group-text bg-black border-secondary text-secondary">
@@ -161,7 +176,7 @@ function UserLibrary() {
                         </div>
                     </div>
 
-                    {/* 3. Sortowanie */}
+                    {/* 3. sort */}
                     <div className="col-12 col-md-6 col-lg-3">
                         <div className="input-group">
                             <span className="input-group-text bg-black border-secondary text-secondary">
@@ -179,7 +194,7 @@ function UserLibrary() {
                         </div>
                     </div>
 
-                    {/* 4. Zakładki (All/Favorites) */}
+                    {/* 4. (All/Favorites) */}
                     <div className="col-12 col-md-6 col-lg-3 d-flex justify-content-md-end align-items-center">
                         <div className="btn-group w-100">
                             <button
