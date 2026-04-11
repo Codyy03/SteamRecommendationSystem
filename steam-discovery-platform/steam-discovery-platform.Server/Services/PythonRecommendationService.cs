@@ -56,5 +56,32 @@ namespace steam_discovery_platform.Server.Services
             return pythonData;
         }
 
+        public async Task<PythonRecommendationResponse> GetUserRecommendationsAsync(List<string> query, float genre, float met, float pop, int howManyGames)
+        {
+            // ask python for recomendations
+            var response = await httpClient.GetAsync(
+                string.Create(CultureInfo.InvariantCulture,
+                $"http://localhost:8000/user_recommend?query={query}&genre_weight={genre}&meta_weight={met}&pop_weight={pop}&how_many_games={howManyGames}")
+            );
+
+            if (!response.IsSuccessStatusCode) return new PythonRecommendationResponse();
+
+            var pythonData = await response.Content.ReadFromJsonAsync<PythonRecommendationResponse>();
+
+            var ids = pythonData.Recommendations.Select(r => r.Appid).ToList();
+
+            var games = await context.Applications.Where(a => ids.Contains(a.Appid))
+                .Select(a => new GameInfoDTO
+                {
+                    Appid = a.Appid,
+                    Name = a.Name,
+                    HeaderImage = a.HeaderImage,
+                    Type = a.Type,
+                }).ToListAsync();
+
+            pythonData.Recommendations = games.OrderBy(g => ids.IndexOf(g.Appid)).ToList();
+
+            return pythonData;
+        }
     }
 }

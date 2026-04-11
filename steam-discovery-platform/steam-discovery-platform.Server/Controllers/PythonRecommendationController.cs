@@ -35,5 +35,13 @@ namespace steam_discovery_platform.Server.Controllers
             return games == null ? NotFound() : Ok(games);
         }
 
+        [HttpGet("pythonUsertRecommendation")]
+        public async Task<ActionResult<PythonRecommendationResponse>> GetPythonUserRecommendationGames(List<string> gameName, float genre, float met, float pop, int howManyGames)
+        {
+            var games = await pythonRecommendationService.GetUserRecommendationsAsync(gameName, genre, met, pop, howManyGames);
+
+            return games == null ? NotFound() : Ok(games);
+        }
+
     }
 }
