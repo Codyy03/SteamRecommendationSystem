@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom'
 import { getMe, updateUser } from '../services/userService';
 interface UserDTO {
     username: string;
@@ -44,6 +45,8 @@ function UserProfile() {
             setError(err.response?.data || "Update failed");
         }
     };
+
+    const navigate = useNavigate();
 
     if (loading) {
         return (
@@ -130,7 +133,9 @@ function UserProfile() {
                                 ) : (
                                     <>
                                         <button className="btn btn-outline-danger" onClick={() => setIsEditing(true)}>Edit Profile</button>
-                                        <button className="btn btn-link text-light btn-sm text-decoration-none">Change password</button>
+                                            <button className="btn btn-link text-light btn-sm text-decoration-none"
+                                                onClick={() => navigate("/passwordReset") }>
+                                                Change password</button>
                                     </>
                                 )}
                             </div>

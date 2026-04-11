@@ -23,6 +23,22 @@ namespace steam_discovery_platform.Server.Services
             this.jwtHelper = jwtHelper;
         }
 
+        public async Task ChangePassword(Guid userId, ChangePasswordDto changePasswordDto)
+        {
+            User? user = await context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+
+            var passwordErrors = dataValidation.ValidatePassword(changePasswordDto.NewPassword);
+            if (passwordErrors.Any())
+                throw new ValidationException(string.Join(" ", passwordErrors));
+
+            var hasher = new PasswordHasher<User>();
+
+            if (user != null)
+                user.PasswordHash = hasher.HashPassword(null!, changePasswordDto.NewPassword);
+
+            await context.SaveChangesAsync();
+        }
+
         public async Task<User> CreateUser(UserRegisterDTO userRegisterDTO)
         {
             var nameErrors = dataValidation.ValidateName(userRegisterDTO.userName);

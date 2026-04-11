@@ -67,5 +67,16 @@ namespace steam_discovery_platform.Server.Controllers
 
             return Ok(userDto);
         }
+
+        [HttpPut("passwordReset")]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordDto changePasswordDto)
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return Unauthorized();
+
+            await userService.ChangePassword(Guid.Parse(userId), changePasswordDto);
+
+            return NoContent();
+        }
     }
 }

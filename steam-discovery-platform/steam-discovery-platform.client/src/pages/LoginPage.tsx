@@ -129,13 +129,6 @@ function LoginPage() {
                                     Sign In
                                 </button>
 
-                                {/* Checkbox: remember me */}
-                                <div className="form-check mb-4">
-                                    <input className="form-check-input bg-dark border-secondary shadow-none" type="checkbox" id="rememberMe" />
-                                    <label className="form-check-label small text-secondary" htmlFor="rememberMe">
-                                        Remember me
-                                    </label>
-                                </div>
                             </form>
 
                             <hr className="border-secondary opacity-25" />
