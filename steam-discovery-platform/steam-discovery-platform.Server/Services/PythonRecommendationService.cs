@@ -56,13 +56,15 @@ namespace steam_discovery_platform.Server.Services
             return pythonData;
         }
 
-        public async Task<PythonRecommendationResponse> GetUserRecommendationsAsync(List<string> query, float genre, float met, float pop, int howManyGames)
+        public async Task<PythonRecommendationResponse> GetUserRecommendationsAsync(string query, float genre, float met, float pop, int howManyGames)
         {
+            var encodedQuery = Uri.EscapeDataString(query);
+
             // ask python for recomendations
             var response = await httpClient.GetAsync(
-                string.Create(CultureInfo.InvariantCulture,
-                $"http://localhost:8000/user_recommend?query={query}&genre_weight={genre}&meta_weight={met}&pop_weight={pop}&how_many_games={howManyGames}")
-            );
+             string.Create(CultureInfo.InvariantCulture,
+             $"http://localhost:8000/user_recommend?game_names={encodedQuery}&genre_weight={genre}&meta_weight={met}&pop_weight={pop}&how_many_games={howManyGames}")
+         );
 
             if (!response.IsSuccessStatusCode) return new PythonRecommendationResponse();
 

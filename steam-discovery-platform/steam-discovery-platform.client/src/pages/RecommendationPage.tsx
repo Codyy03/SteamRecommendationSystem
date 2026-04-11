@@ -1,8 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom'
-import { getPythonRecomentationGamesByName } from '../services/pythonRecommendationService';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
+import { getPythonRecomentationGamesByName, getPythonUserRecomentationGamesByName } from '../services/pythonRecommendationService';
 import './recommendationPage.css'
 
 function RecommendationPage() {
@@ -25,6 +24,9 @@ function RecommendationPage() {
     const [isUpdating, setIsUpdating] = useState(false);
 
     const { gameName } = useParams();
+    const location = useLocation();
+    const gamesListFromLibrary = location.state?.gamesList;
+
 
     const [weights, setWeights] = useState({
         genre: 0.4,
@@ -34,19 +36,34 @@ function RecommendationPage() {
         series_penalty: 0.4
     });
 
-    const fetchGames = async (name: string, w: typeof weights) => {
+    const fetchGames = async (name: string, w: typeof weights, isLibraryMode: boolean) => {
         try {
-            const data = await getPythonRecomentationGamesByName(
-                name,
-                w.genre,
-                w.meta,
-                w.pop,
-                w.howManyGames,
-                w.series_penalty
-            );
+            let data;
+
+            // Wybieramy odpowiedni serwis na podstawie trybu
+            if (isLibraryMode) {
+                data = await getPythonUserRecomentationGamesByName(
+                    name,
+                    w.genre,
+                    w.meta,
+                    w.pop,
+                    w.howManyGames
+                    // Jeúli doda≥eú tu series_penalty w C#, dopisz je teø tutaj!
+                );
+            } else {
+                data = await getPythonRecomentationGamesByName(
+                    name,
+                    w.genre,
+                    w.meta,
+                    w.pop,
+                    w.howManyGames,
+                    w.series_penalty
+                );
+            }
+
             setPythonInfo(data);
             setGame(data?.recommendations || []);
-            console.log(String(data?.base_game))
+            console.log("Base game z pythona:", String(data?.base_game));
         } catch (err) {
             console.error(err);
         } finally {
@@ -56,16 +73,28 @@ function RecommendationPage() {
     };
 
     const debouncedFetch = useMemo(
-        () => debounce((name: string, w: typeof weights) => {
-            fetchGames(name, w);
+        // Przekazujemy isLibraryMode dalej
+        () => debounce((name: string, w: typeof weights, isLibraryMode: boolean) => {
+            fetchGames(name, w, isLibraryMode);
         }, 500),
         []
     );
 
     useEffect(() => {
-        if (!gameName) return;
-
         window.scrollTo(0, 0);
+
+        let queryToSearch = "";
+        let isLibraryMode = false; // Domyúlnie false
+
+        if (gameName && gameName !== 'library') {
+            queryToSearch = gameName;
+            isLibraryMode = false; // Szukamy pojedynczej gry
+        } else if (gamesListFromLibrary) {
+            queryToSearch = gamesListFromLibrary;
+            isLibraryMode = true;  // Szukamy po bibliotece!
+        } else {
+            return;
+        }
 
         if (games.length === 0) {
             setLoading(true);
@@ -73,10 +102,11 @@ function RecommendationPage() {
             setIsUpdating(true);
         }
 
-        debouncedFetch(gameName, weights);
+        // Odpalamy z nowπ flagπ
+        debouncedFetch(queryToSearch, weights, isLibraryMode);
 
         return () => debouncedFetch.cancel();
-    }, [gameName, weights, debouncedFetch]);
+    }, [gameName, gamesListFromLibrary, weights, debouncedFetch]); // Zaleønoúci zostajπ te same
 
     const [innerSearch, setInnerSearch] = useState("");
     const [sortType, setSortType] = useState("relevance");
@@ -103,6 +133,33 @@ function RecommendationPage() {
     const navigateToGameDetails = (id: number) => {
         navigate(`/gameInfo/${id}`);
     }
+
+    const getHeaderContent = () => {
+        // 1. Sprawdü czy mamy dane ze 'state' (czyli z biblioteki)
+        if (location.state?.gamesList) {
+            return (
+                <h2 className="fw-bold">
+                    Recommended based on <span className="text-danger">Your Library</span>
+                </h2>
+            );
+        }
+
+        // 2. Obs≥uga Cold Start (jeúli jedna gra nie zosta≥a znaleziona)
+        if (pythonInfo?.is_cold_start) {
+            return (
+                <h3 className="text-danger">
+                    Game <span className="text-light">'{gameName}'</span> not found, showing generic matches:
+                </h3>
+            );
+        }
+
+        // 3. Standardowa jedna gra
+        return (
+            <h2 className="fw-bold">
+                Recommended for: <span className="text-danger">{pythonInfo?.base_game}</span>
+            </h2>
+        );
+    };
 
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -257,10 +314,7 @@ function RecommendationPage() {
                 {/* results*/}
                 <div className="container">
                     <div className="text-center mb-5">
-                        {!pythonInfo?.is_cold_start ? < h2 className="fw-bold">Recommended for: <span className="text-danger">{pythonInfo?.base_game}</span></h2>
-                            : <h3 className=" text-danger">
-                                Game '{pythonInfo?.base_game}' not found, generic matches:
-                            </h3>}
+                        {getHeaderContent()}
                                     
                         <div style={{ height: '30px' }} className="mt-2 d-flex justify-content-center align-items-center">
                             {isUpdating && (

@@ -76,16 +76,15 @@ function UserLibrary() {
         });
 
 
-    const handleGetRecommendations = async () => {
-        // displayedGames ju¿ uwzglêdnia wyszukiwarkê, zak³adkê ulubione i gatunek!
-        const gameIdsToSend = displayedGames.map(item => item.game.appid);
+    const handleGetRecommendations = () => {
+        const libraryNames = displayedGames.map(item => item.game.name).join(",");
 
-        if (gameIdsToSend.length === 0) {
+        if (libraryNames.length === 0) {
             alert("No games to base recommendations on. Change your filters!");
             return;
         }
 
-        // Wyœlij gameIdsToSend do Pythona
+        navigate('/recommendations/library', { state: { gamesList: libraryNames } });
     }
 
     const handleRemoveGame = async (appid: number) => {
@@ -117,7 +116,8 @@ function UserLibrary() {
                     </div>
 
                     {/* PRZYCISK REKOMENDACJI (Python API) */}
-                    <button className="btn btn-outline-info d-flex align-items-center gap-2 shadow-sm fw-bold">
+                    <button className="btn btn-outline-info d-flex align-items-center gap-2 shadow-sm fw-bold"
+                        onClick={() => handleGetRecommendations() }>
                         <i className="bi bi-magic"></i>
                         <span>Get AI Recommendations</span>
                     </button>

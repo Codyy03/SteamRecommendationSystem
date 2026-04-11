@@ -158,6 +158,6 @@ logic.get_recommendations("crimson desert open world rpg fantasy action knights 
 
 my_library = ["The Witcher 3", "Skyrim", "Cyberpunk 2077"]
 print("recomandation for my library")
-logic.get_user_recommendations(my_library)
+get_user_recommendations(my_library)
 
 """

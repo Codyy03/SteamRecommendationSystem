@@ -22,7 +22,7 @@ def get_rec_user(
     genre_weight: float = 0.4,
     meta_weight: float = 0.3,
     pop_weight: float = 0.15,
-    how_many_games = 15,
+    how_many_games: int = 15,
 ):
     # split array of game names
     names_list = [n.strip() for n in game_names.split(",")]
