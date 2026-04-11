@@ -63,14 +63,19 @@ function UserProfile() {
             <div className="row justify-content-center">
                 <div className="col-md-6 col-lg-5">
                     <div className="card border-0 shadow-lg" style={{
-                        background: 'rgba(18, 24, 29, 0.95)',
+                        background: 'linear-gradient(145deg, #1b2838 0%, #171a21 100%)',
                         color: '#dcdede',
                         borderRadius: '20px',
-                        borderLeft: '4px solid #1a9fff'
+                        borderLeft: '4px solid #1a9fff',
+                        boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
                     }}>
                         <div className="card-body p-4 text-center">
-                            <div className="mb-4 d-inline-block p-3 rounded-circle" style={{ background: '#1b2838' }}>
-                                <i className="bi bi-person-fill display-1 text-secondary"></i>
+                            <div className="mb-4 d-inline-block p-4 rounded-circle"
+                                style={{
+                                    background: 'rgba(26, 159, 255, 0.1)',
+                                    border: '1px solid rgba(26, 159, 255, 0.2)'
+                                }}>
+                                <i className="bi bi-person-fill display-1" style={{ color: '#1a9fff' }}></i>
                             </div>
 
                             {!isEditing ? (

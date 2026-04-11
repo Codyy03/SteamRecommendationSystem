@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import api from '../services/api';
-
+import { useNavigate } from 'react-router-dom'
 function ChangePassword() {
     interface ChangePasswordDto {
         password: string;   
@@ -20,7 +20,6 @@ function ChangePassword() {
         setError(null);
         setSuccess(null);
 
-        // 1. Walidacja po stronie frontendu
         if (!password || !newPassword || !confirmPassword) {
             setError("All fields are required.");
             return;
@@ -36,7 +35,6 @@ function ChangePassword() {
             return;
         }
 
-        // 2. Wysłanie zapytania do API
         try {
             setLoading(true);
 
@@ -56,11 +54,14 @@ function ChangePassword() {
             setError(err.response?.data || "Failed to change password. Please try again.");
         } finally {
             setLoading(false);
+            navigation("/me")
         }
     };
 
+    const navigation = useNavigate();
+
     return (
-        <div className="container-fluid py-5 min-vh-100 bg-dark d-flex align-items-center justify-content-center">
+        <div className="container-fluid py-5 min-vh-100 bg-dark d-flex align-items-center justify-content-center main-bg-gradient">
             <div className="container" style={{ maxWidth: '500px' }}>
 
                 <div className="card border-secondary shadow-lg" style={{ backgroundColor: '#111923' }}>
@@ -156,7 +157,7 @@ function ChangePassword() {
                             {/* Submit */}
                             <button
                                 type="submit"
-                                className="btn btn-info w-100 fw-bold py-2 shadow-sm"
+                                className="btn btn-danger w-100 fw-bold py-2 shadow-sm"
                                 disabled={loading}
                             >
                                 {loading ? (
