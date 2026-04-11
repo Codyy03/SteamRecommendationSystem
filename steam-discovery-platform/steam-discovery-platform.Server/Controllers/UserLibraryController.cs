@@ -56,5 +56,16 @@ namespace steam_discovery_platform.Server.Controllers
             await userLibraryService.RemoveGameFromLibrary(appid, Guid.Parse(userIdString));
             return NoContent();
         }
+
+        [HttpPut("/api/usersLibrary/updateFavoriteGame/{appid}")]
+        public async Task<IActionResult> ChangeGameFavoriteStatus(int appid, [FromQuery] bool isFavorite)
+        {
+            var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userIdString)) return Unauthorized();
+
+            await userLibraryService.ChangeGameFavoriteStatus(appid, Guid.Parse(userIdString), isFavorite);
+            return NoContent();
+        }
+
     }
 }

@@ -17,6 +17,18 @@ namespace steam_discovery_platform.Server.Services
             this.jwtHelper = jwtHelper;
         }
 
+        public async Task ChangeGameFavoriteStatus(int appid, Guid userId, bool isFavorite)
+        {
+            var userLibraryGame = await context.UserLibraries
+                .FirstOrDefaultAsync(us => us.Appid == appid && us.UserId == userId);
+
+            if (userLibraryGame != null)
+            {
+                userLibraryGame.IsFavorite = isFavorite;
+                await context.SaveChangesAsync();
+            }
+        }
+
         public async Task<UserLibrary> AddGameToLibrary(Guid userID, UserGameDTO userGameDTO)
         {
             UserLibrary gameDTO = new UserLibrary

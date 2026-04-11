@@ -58,20 +58,21 @@ function UserLibrary() {
         return Array.from(genresSet).sort();
     }, [games]);
 
-    const displayedGames = games
-        .filter(item => {
-            const matchesFilter = filter === 'all' || item.isFavorite;
-            const matchesSearch = item.game.name.toLowerCase().includes(searchTerm.toLowerCase());
-            const matchesGenre = selectedGenre === 'all' || (item.genres && item.genres.includes(selectedGenre));
-
-            return matchesFilter && matchesSearch && matchesGenre;
-        })
-        .sort((a, b) => {
-            if (sortBy === 'newest') return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
-            if (sortBy === 'oldest') return new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime();
-            if (sortBy === 'az') return a.game.name.localeCompare(b.game.name);
-            return 0;
-        });
+    const displayedGames = useMemo(() => {
+        return games
+            .filter(item => {
+                const matchesFilter = filter === 'all' || item.isFavorite;
+                const matchesSearch = item.game.name.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesGenre = selectedGenre === 'all' || (item.genres && item.genres.includes(selectedGenre));
+                return matchesFilter && matchesSearch && matchesGenre;
+            })
+            .sort((a, b) => {
+                if (sortBy === 'newest') return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
+                if (sortBy === 'oldest') return new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime();
+                if (sortBy === 'az') return a.game.name.localeCompare(b.game.name);
+                return 0;
+            });
+    }, [games, filter, searchTerm, selectedGenre, sortBy]); 
 
 
     const handleGetRecommendations = () => {
@@ -94,6 +95,30 @@ function UserLibrary() {
             console.error("Failed to remove game:", error);
         }
     }
+
+    const handleUpdateFavoriteStatus = async (appid: number, isFavorite: boolean) => {
+        try {
+            await api.put(`/api/usersLibrary/updateFavoriteGame/${appid}?isFavorite=${isFavorite}`)
+
+            const updatedGames = games.map((item) => {
+                if (item.game.appid === appid) {
+                    return {
+                        ...item,
+                        isFavorite: isFavorite
+                    };
+                }
+                return item;
+            });
+            setGames(updatedGames);
+
+            // 4. Zapisujemy nową tablicę do stanu
+            setGames(updatedGames);
+
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } catch (err: any) {
+            setError(err.response?.data || "Update failed");
+        }
+    };
 
     if (loading) return (
         <div className="container-fluid py-5 min-vh-100 bg-dark d-flex justify-content-center align-items-center">
@@ -222,7 +247,7 @@ function UserLibrary() {
 
                                 {/* Favorite Icon */}
                                 <button className="btn btn-link position-absolute top-0 end-0 p-2 border-0" style={{ zIndex: 2 }}
-                                    onClick={() => handleGetRecommendations()}>
+                                    onClick={() => handleUpdateFavoriteStatus(item.game.appid, !item.isFavorite)}>
                                     <i className={`bi ${item.isFavorite ? 'bi-heart-fill text-danger' : 'bi-heart text-white'} fs-5`}></i>
                                 </button>
 

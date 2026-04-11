@@ -8,5 +8,6 @@ namespace steam_discovery_platform.Server.Interfaces
         public Task<UserLibrary> AddGameToLibrary(Guid userId, UserGameDTO userGameDTO);
         public Task<List<UserLibraryGameDTO>> GetUserLibraryGames(Guid userId);
         public Task RemoveGameFromLibrary(int appid, Guid userId);
+        public Task ChangeGameFavoriteStatus(int appid, Guid userId, bool isFavorite);
     }
 }
