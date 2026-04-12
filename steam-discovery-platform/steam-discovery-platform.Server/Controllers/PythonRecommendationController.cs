@@ -35,6 +35,16 @@ namespace steam_discovery_platform.Server.Controllers
             return games == null ? NotFound() : Ok(games);
         }
 
+        /// <summary>
+        /// Fetches AI-based game recommendations by sending a list of user games to the Python recommendation engine.
+        /// It then enriches the returned AppIDs with full game details from the database.
+        /// </summary>
+        /// <param name="query">A comma-separated string of game names from the user's library.</param>
+        /// <param name="genre">Weight for genre similarity (0.0 - 1.0).</param>
+        /// <param name="met">Weight for Metacritic score (0.0 - 1.0).</param>
+        /// <param name="pop">Weight for game popularity/recommendations count (0.0 - 1.0).</param>
+        /// <param name="howManyGames">The number of recommendations to return.</param>
+        /// <returns>A response object containing the list of recommended games and metadata.</returns>
         [HttpGet("pythonUserRecommendation")]
         public async Task<ActionResult<PythonRecommendationResponse>> GetPythonUserRecommendationGames([FromQuery] string gameName, float genre, float met, float pop, int howManyGames)
         {
