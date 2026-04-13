@@ -153,6 +153,25 @@ namespace steam_discovery_platform.Server.Tests.TestInfrastructure
 
                 db.Users.AddRange(adminUser, regularUser);
                 db.SaveChanges();
+
+                var adminLibraryGame = new UserLibrary
+                {
+                    UserId = user1Id,          
+                    Appid = 10, // Cyberpunk 2077
+                    IsFavorite = true,    
+                    AddedAt = DateTime.UtcNow.AddDays(-2) 
+                };
+
+                var regularUserLibraryGame = new UserLibrary
+                {
+                    UserId = user2Id,  
+                    Appid = 20,  
+                    IsFavorite = false,
+                    AddedAt = DateTime.UtcNow.AddDays(-5)
+                };
+
+                db.UserLibraries.AddRange(adminLibraryGame, regularUserLibraryGame);
+                db.SaveChanges();
             });
         }
     }
