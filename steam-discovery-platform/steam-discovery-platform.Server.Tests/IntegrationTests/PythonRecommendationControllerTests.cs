@@ -91,5 +91,124 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             result.Recommendations[0].Appid.Should().Be(10);
             result.Recommendations[0].Name.Should().Be("Witcher 3");
         }
+
+        [Fact]
+        public async Task GetUserPythonRecommendationGames_ReturnsOk_WhenGamesFound()
+        {
+            // Arrange
+            var mockService = new Mock<IPythonRecommendationService>();
+
+            // Zmieniamy na pojedynczy obiekt Response, a nie listę
+            var expectedResponse = new PythonRecommendationResponse
+            {
+                IsColdStart = false,
+                BaseGame = "Base game",
+                Recommendations = new List<GameInfoDTO> { new GameInfoDTO { Appid = 1, Name = "Test Game" } }
+            };
+
+            mockService.Setup(s => s.GetUserRecommendationsAsync(
+                It.IsAny<string>(), It.IsAny<float>(), It.IsAny<float>(),
+                It.IsAny<float>(), It.IsAny<int>()))
+                .ReturnsAsync(expectedResponse);
+
+            var controller = new PythonRecommendationController(mockService.Object);
+
+            // Act
+            var result = await controller.GetPythonUserRecommendationGames("Cyberpunk 2077, The Witcher 3, Fallout 4", 0.4f, 0.3f, 0.15f, 5);
+
+            // Assert
+            var okResult = result.Result.Should().BeOfType<OkObjectResult>().Subject;
+            // Sprawdzamy, czy Value to PythonRecommendationResponse
+            var model = okResult.Value.Should().BeOfType<PythonRecommendationResponse>().Subject;
+
+            model.BaseGame.Should().Be("Base game");
+            model.Recommendations.Should().HaveCount(1);
+            model.Recommendations[0].Name.Should().Be("Test Game");
+        }
+
+
+        [Fact]
+        public async Task GetUserRecommendationsAsync_ReturnsMappedGames_FromMockedPython()
+        {
+            // 1. Setup InMemory Database
+            var options = new DbContextOptionsBuilder<SteamdbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unikalna nazwa bazy dla testu
+                .Options;
+
+            using var context = new SteamdbContext(options);
+            context.Applications.Add(new Application { Appid = 10, Name = "Witcher 3", HeaderImage = "img" });
+            await context.SaveChangesAsync();
+
+            // 2. Mock HttpClient
+            var handlerMock = new Mock<HttpMessageHandler>();
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                // Symulujemy JSONa, którego zwraca Python (z polami base_game i is_cold_start)
+                Content = JsonContent.Create(new
+                {
+                    base_game = "BaseGame",
+                    is_cold_start = false,
+                    recommendations = new[] { new { appid = 10 } }
+                })
+            };
+
+            handlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(response);
+
+            var httpClient = new HttpClient(handlerMock.Object);
+            var service = new PythonRecommendationService(httpClient, null, context);
+
+            // 3. Act
+            var result = await service.GetUserRecommendationsAsync("Witcher", 0.5f, 0.5f, 0.5f, 1);
+
+            // 4. Assert
+            result.Should().NotBeNull();
+            result.IsColdStart.Should().BeFalse();
+            result.Recommendations.Should().NotBeEmpty();
+            result.Recommendations[0].Appid.Should().Be(10);
+            result.Recommendations[0].Name.Should().Be("Witcher 3");
+        }
+
+        [Fact]
+        public async Task GetUserRecommendationsAsync_WhenPythonReturnsNonExistentId_ReturnsEmptyListButNoCrash()
+        {
+            // 1. Setup InMemory Database
+            var options = new DbContextOptionsBuilder<SteamdbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString()) // Unikalna nazwa bazy dla testu
+                .Options;
+
+            using var context = new SteamdbContext(options);
+            context.Applications.Add(new Application { Appid = 10, Name = "Witcher 3", HeaderImage = "img" });
+            await context.SaveChangesAsync();
+
+            // 2. Mock HttpClient
+            var handlerMock = new Mock<HttpMessageHandler>();
+            var response = new HttpResponseMessage
+            {
+                StatusCode = HttpStatusCode.OK,
+                // Symulujemy JSONa, którego zwraca Python (z polami base_game i is_cold_start)
+                Content = JsonContent.Create(new
+                {
+                    base_game = "BaseGame",
+                    is_cold_start = false,
+                    recommendations = new[] { new { appid = 790 } }
+                })
+            };
+
+            handlerMock.Protected()
+                .Setup<Task<HttpResponseMessage>>("SendAsync", ItExpr.IsAny<HttpRequestMessage>(), ItExpr.IsAny<CancellationToken>())
+                .ReturnsAsync(response);
+
+            var httpClient = new HttpClient(handlerMock.Object);
+            var service = new PythonRecommendationService(httpClient, null, context);
+
+            // Act
+            var result = await service.GetUserRecommendationsAsync("Witcher", 0.5f, 0.5f, 0.5f, 1);
+
+            // Assert
+            result.Recommendations.Should().BeEmpty();
+        }
     }
 }

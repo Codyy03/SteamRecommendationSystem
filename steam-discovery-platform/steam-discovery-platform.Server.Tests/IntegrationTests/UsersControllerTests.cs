@@ -1,4 +1,9 @@
-﻿using steam_discovery_platform.Server.DTOs;
+﻿using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using steam_discovery_platform.Server.DTOs;
+using steam_discovery_platform.Server.Models;
 using steam_discovery_platform.Server.Tests.TestInfrastructure;
 using System.Net;
 using System.Net.Http.Headers;
@@ -148,6 +153,38 @@ namespace steam_discovery_platform.Server.Tests.IntegrationTests
             Assert.NotNull(updatedData);
             Assert.Equal("asddd", updatedData!.Username);
             Assert.Equal("new@email.com", updatedData!.Email);
+        }
+
+        [Fact]
+        public async Task ChangePassword_ReturnOk()
+        {
+            var factory = new SeededDbFactory();
+            var client = factory.CreateClient();
+
+            var userId = "00000000-0000-0000-0000-000000000001";
+            var token = TestJwtTokenHelper.GenerateTestToken(userId, "admin@test.pl", "admin_test", "Admin");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var changePasswordDto = new ChangePasswordDto
+            {
+                Password = "Admin123!", // Stare hasło z SeededDbFactory
+                NewPassword = "NewSecurePassword123!" // Nowe hasło, które chcemy ustawić
+            };
+
+            var response = await client.PutAsJsonAsync("/api/users/passwordReset", changePasswordDto);
+            response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+
+            using var scope = factory.Services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<SteamdbContext>();
+
+            // Musimy pobrać użytkownika PONOWNIE z bazy, żeby mieć świeże dane po SaveChangesAsync()
+            var userFromDb = await dbContext.Users.FindAsync(Guid.Parse(userId));
+
+            var hasher = new PasswordHasher<User>();
+            var verificationResult = hasher.VerifyHashedPassword(userFromDb!, userFromDb!.PasswordHash, "NewSecurePassword123!");
+
+            verificationResult.Should().Be(PasswordVerificationResult.Success);
+
         }
     }
 }

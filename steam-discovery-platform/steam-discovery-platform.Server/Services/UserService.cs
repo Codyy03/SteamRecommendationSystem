@@ -24,15 +24,20 @@ namespace steam_discovery_platform.Server.Services
         public async Task ChangePassword(Guid userId, ChangePasswordDto changePasswordDto)
         {
             User? user = await context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
+            if (user == null) throw new ValidationException("User not found");
+
+            var hasher = new PasswordHasher<User>();
+
+            var verification = hasher.VerifyHashedPassword(user, user.PasswordHash, changePasswordDto.Password);
+           
+            if (verification == PasswordVerificationResult.Failed)
+                throw new ValidationException("Current password is incorrect.");
 
             var passwordErrors = dataValidation.ValidatePassword(changePasswordDto.NewPassword);
             if (passwordErrors.Any())
                 throw new ValidationException(string.Join(" ", passwordErrors));
 
-            var hasher = new PasswordHasher<User>();
-
-            if (user != null)
-                user.PasswordHash = hasher.HashPassword(null!, changePasswordDto.NewPassword);
+            user.PasswordHash = hasher.HashPassword(null!, changePasswordDto.NewPassword);
 
             await context.SaveChangesAsync();
         }
