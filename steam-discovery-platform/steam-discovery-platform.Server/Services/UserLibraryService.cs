@@ -17,6 +17,7 @@ namespace steam_discovery_platform.Server.Services
             this.jwtHelper = jwtHelper;
         }
 
+        /// <inheritdoc />
         public async Task ChangeGameFavoriteStatus(int appid, Guid userId, bool isFavorite)
         {
             var userLibraryGame = await context.UserLibraries
@@ -29,6 +30,7 @@ namespace steam_discovery_platform.Server.Services
             }
         }
 
+        /// <inheritdoc />
         public async Task<UserLibrary> AddGameToLibrary(Guid userID, UserGameDTO userGameDTO)
         {
             UserLibrary gameDTO = new UserLibrary
@@ -45,6 +47,7 @@ namespace steam_discovery_platform.Server.Services
             return gameDTO;
         }
 
+        /// <inheritdoc />
         public async Task<List<UserLibraryGameDTO>> GetUserLibraryGames(Guid userId)
         {
             return await context.UserLibraries
@@ -68,6 +71,7 @@ namespace steam_discovery_platform.Server.Services
                     .ToListAsync();
         }
 
+        /// <inheritdoc />
         public async Task RemoveGameFromLibrary(int appid, Guid userId)
         {
             var gameInLibrary = await context.UserLibraries

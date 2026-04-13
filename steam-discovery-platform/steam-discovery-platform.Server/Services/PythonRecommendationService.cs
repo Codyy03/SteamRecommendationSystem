@@ -19,15 +19,7 @@ namespace steam_discovery_platform.Server.Services
             this.context = context;
         }
 
-        /// <summary>
-        /// Calls the Python recommendation engine and maps the resulting IDs to full game database records.
-        /// </summary>
-        /// <param name="query">The search term or game name to base recommendations on.</param>
-        /// <param name="genre">Influence of genre similarity on the result (default 0.4).</param>
-        /// <param name="met">Influence of Metacritic score on the result (default 0.3).</param>
-        /// <param name="pop">Influence of popularity on the result (default 0.15).</param>
-        /// <param name="howManyGames">Total number of results requested (default 20).</param>
-        /// <returns>A list of ordered <see cref="GameInfoDTO"/> matching the Python engine's rankings.</returns>
+        /// <inheritdoc />
         public async Task<PythonRecommendationResponse> GetRecommendationsAsync(string query, float genre = 0.4f, float met = 0.3f, float pop = 0.15f, int howManyGames = 20, float series_penalty = 0.4f)
         {
             // ask python for recomendations
@@ -56,6 +48,7 @@ namespace steam_discovery_platform.Server.Services
             return pythonData;
         }
 
+        /// <inheritdoc />
         public async Task<PythonRecommendationResponse> GetUserRecommendationsAsync(string query, float genre, float met, float pop, int howManyGames)
         {
             var encodedQuery = Uri.EscapeDataString(query);

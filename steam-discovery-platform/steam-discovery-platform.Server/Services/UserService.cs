@@ -4,9 +4,6 @@ using steam_discovery_platform.Server.DTOs;
 using steam_discovery_platform.Server.Helpers;
 using steam_discovery_platform.Server.Interfaces;
 using steam_discovery_platform.Server.Models;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Numerics;
 using steam_discovery_platform.Server.Validation;
 
 namespace steam_discovery_platform.Server.Services
@@ -23,6 +20,7 @@ namespace steam_discovery_platform.Server.Services
             this.jwtHelper = jwtHelper;
         }
 
+        /// <inheritdoc />
         public async Task ChangePassword(Guid userId, ChangePasswordDto changePasswordDto)
         {
             User? user = await context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
@@ -39,6 +37,7 @@ namespace steam_discovery_platform.Server.Services
             await context.SaveChangesAsync();
         }
 
+        /// <inheritdoc />
         public async Task<User> CreateUser(UserRegisterDTO userRegisterDTO)
         {
             var nameErrors = dataValidation.ValidateName(userRegisterDTO.userName);
@@ -75,6 +74,7 @@ namespace steam_discovery_platform.Server.Services
             return user;
         }
 
+        /// <inheritdoc />
         public async Task<UserDTO> GetMe(Guid userId)
         {
             var user = await context.Users.FirstOrDefaultAsync(u => u.Id == userId);
@@ -88,7 +88,8 @@ namespace steam_discovery_platform.Server.Services
                 Role = user.Role
             };
         }
-
+        
+        /// <inheritdoc />
         public async Task<UserDTO> GetUser(Guid id)
         {
             UserDTO? userDTO = await context.Users
@@ -106,6 +107,7 @@ namespace steam_discovery_platform.Server.Services
             return userDTO;
         }
 
+        /// <inheritdoc />
         public async Task<LoginResponseDTO> Login(LoginDTO loginDTO)
         {
             User? user = await context.Users.FirstOrDefaultAsync(u => u.Username == loginDTO.UserName);
@@ -145,6 +147,7 @@ namespace steam_discovery_platform.Server.Services
             };
         }
 
+        /// <inheritdoc />
         public async Task<UserDTO> UpdateUser(UpdateUserDTO updateUserDTO)
         {
             var existing = await context.Users.FindAsync(updateUserDTO.UserId);

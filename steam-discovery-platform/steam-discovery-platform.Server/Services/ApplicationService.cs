@@ -22,7 +22,7 @@ namespace steam_discovery_platform.Server.Services
         }
 
         /// <summary>
-        /// Retrieves detailed information about a specific game, including developers, publishers, genres, and categories.
+        /// Retrieves detailed information about a specific game, including developers, publishers, genres, categories and if game is in user library.
         /// </summary>
         /// <param name="id">The unique Steam Application ID (Appid).</param>
         /// <returns>A DTO containing comprehensive game details, or null if not found.</returns>
