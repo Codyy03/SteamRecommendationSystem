@@ -1,7 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Layout from './layout/Layout';
-import HomePage from './pages/HomePage';
-import RecommendationPage from './pages/RecommendationPage';
 import GameDetailsPage from './pages/GameDetailsPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -9,6 +7,8 @@ import { AuthProvider } from './context/AuthContext';
 import UserProfile from "./pages/UserProfile";
 import UserLibrary from "./pages/UserLibrary";
 import ChangePassword from "./pages/ResetPasswordPage";
+import HomePage from "./pages/HomePage/HomePage";
+import RecommendationPage from "./pages/RecommendationPage/RecommendationPage";
 
 function App() {
     return (

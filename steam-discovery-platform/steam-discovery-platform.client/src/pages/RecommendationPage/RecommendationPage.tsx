@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { debounce } from 'lodash';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { getPythonRecomentationGamesByName, getPythonUserRecomentationGamesByName } from '../services/pythonRecommendationService';
+import { getPythonRecomentationGamesByName, getPythonUserRecomentationGamesByName } from '../../services/pythonRecommendationService';
 import './recommendationPage.css'
 
 function RecommendationPage() {
