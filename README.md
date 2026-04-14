@@ -41,7 +41,8 @@ A high-level overview of the repository organization:
   * .Server.Tests/: Integration and unit tests using xUnit and Moq.
   * .client/: React frontend application (Vite).
 
-![Page presentaion](docs/Animation.gif)
+## Page presentaion
+![Page presentaion](/docs/Animation.gif)
 
 ## Screenshots
 
@@ -49,44 +50,44 @@ A high-level overview of the repository organization:
   <summary>View Project Gallery</summary>
   
   ### Main Dashboard
-  ![Dashboard](docs/main_page.png)
+  ![Dashboard](/docs/main_page.png)
 
   ### Detailed Game Preview
-  ![Game details](docs/game_details.png)
+  ![Game details](/docs/game_details.png)
 
   ### AI Recommendations (by Title)
-  ![Recommendation](docs/recomendations_without_filters.png)
+  ![Recommendation](/docs/recomendations_without_filters.png)
 
-  ### ⚙Advanced Search with Filters
-  ![Recommendation](docs/recomendations_with_filters.png)
+  ### Advanced Search with Filters
+  ![Recommendation](/docs/recomendations_with_filters.png)
   
   ### User Authentication (Registration & Login)
-  ![Registration](docs/register.png)
-  ![Login](docs/login.png)
+  ![Registration](/docs/register.png)
+  ![Login](/docs/login.png)
 
   ### User Profile Management
-  ![Profile](docs/user_profile.png)
+  ![Profile](/docs/user_profile.png)
 
   ### Personal Game Collection
-  ![Library](docs/library.png)
+  ![Library](/docs/library.png)
 
   ### Library Organization & Filtering
-  ![Library](docs/library_with_filters.png)
+  ![Library](/docs/library_with_filters.png)
 
   ### Personalized Recommendations (Based on Library)
   *This feature analyzes the user's entire collection to suggest new titles.*
-  ![Recommendation](docs/recomendations_base_on_library.png)
+  ![Recommendation](/docs/recomendations_base_on_library.png)
 
   ### Empty State UX
   *Example of how the system guides new users with no games in their library.*
-  ![Empty Library](docs/empty_library.png)
+  ![Empty Library](/docs/empty_library.png)
 
 </details>
 
-## Architecture & Tech Stack
-
 ## Database Schema (ERD)
 The database is designed to handle complex relationships between users, games, and their metadata.
+
+## Architecture & Tech Stack
 
 ![Database ERD](docs/erd.png)
 
