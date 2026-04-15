@@ -87,9 +87,13 @@ A high-level overview of the repository organization:
 ## Database Schema (ERD)
 The database is designed to handle complex relationships between users, games, and their metadata.
 
-## Architecture & Tech Stack
-
 ![Database ERD](docs/erd.png)
+
+# Architecture Overview
+
+![System Diagram](docs/Architecture_verview.png)
+
+## Architecture & Tech Stack
 
 ### Backend (.NET Web API)
 * **Framework:** .NET 8
