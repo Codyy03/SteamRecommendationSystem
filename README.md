@@ -89,7 +89,7 @@ The database is designed to handle complex relationships between users, games, a
 
 ![Database ERD](docs/erd.png)
 
-# Architecture Overview
+## Architecture Overview
 
 ![System Diagram](docs/Architecture_verview.png)
 
